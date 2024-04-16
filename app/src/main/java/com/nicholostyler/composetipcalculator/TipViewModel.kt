@@ -32,18 +32,31 @@ class TipViewModel : ViewModel() {
     var perPersonAmount by mutableDoubleStateOf(0.00)
         private set
 
+    var taxTotal by mutableDoubleStateOf(0.0)
+        private set
+
+    var totalWithTip by mutableDoubleStateOf(0.0)
+        private set
+
     fun calculatePerAmount()
     {
         // update values on first launch
         updateSelectedTipPercentage(selectedTipPercentage)
-        var billWithTip = billTotal + (billTotal * tipPercent)
-        perPersonAmount = (billWithTip / splitBy)
+        taxTotal = billTotal * tipPercent
+        totalWithTip = billTotal + taxTotal
+        perPersonAmount = (totalWithTip / splitBy)
 
         val df = DecimalFormat("#.##")
         df.roundingMode = RoundingMode.CEILING
 
-        val billFormat = df.format(perPersonAmount)
+        var billFormat = df.format(perPersonAmount)
         perPersonAmount = billFormat.toDouble()
+
+        billFormat = df.format(taxTotal)
+        taxTotal = billFormat.toDouble()
+
+        billFormat = df.format(totalWithTip)
+        totalWithTip = billFormat.toDouble()
     }
 
     fun updateSelectedTipPercentage(newValue: Int) {

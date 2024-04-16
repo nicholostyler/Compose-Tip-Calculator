@@ -30,6 +30,7 @@ import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -39,6 +40,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MaterialTheme.colorScheme
@@ -46,12 +48,16 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
+import androidx.compose.material3.Slider
+import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -63,14 +69,17 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.LineHeightStyle
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.view.WindowCompat
 import com.nicholostyler.composetipcalculator.ui.theme.ComposeTipCalculatorTheme
+import java.time.format.TextStyle
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -91,7 +100,9 @@ class MainActivity : ComponentActivity() {
             ComposeTipCalculatorTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(
-                    modifier = Modifier.fillMaxSize().safeDrawingPadding(),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .safeDrawingPadding(),
                     color = colorScheme.background
 
                 ) {
@@ -119,10 +130,13 @@ fun MainCalculator()
         //.safeDrawingPadding()
         //.safeContentPadding()
         ) {
-        TotalView(modifier = Modifier.weight(1f), tipCalcState)
-        TipPercentView(modifier = Modifier.weight(1f), tipCalcState)
-        SplitView(modifier = Modifier.weight(1f), tipCalcState)
-        Keypad(modifier = Modifier.weight(3f), tipCalcState)
+        //TotalView(modifier = Modifier.weight(1f), tipCalcState)
+        //SplitView(modifier = Modifier.weight(1f), tipCalcState)
+        //TipPercentView(modifier = Modifier.weight(.6f), tipCalcState)
+        TotalOverview(modifier = Modifier.weight(1f), tipCalcState)
+        SplitOverview(modifier = Modifier.weight(1.2f), tipCalcState)
+        TipPercentView(modifier = Modifier.weight(.6f), tipCalcState)
+        Keypad(modifier = Modifier.weight(2f), tipCalcState)
     }
 }
 
@@ -131,22 +145,80 @@ fun TotalView(
     modifier: Modifier = Modifier, tipViewModel: TipViewModel
 )
 {
-    Column(
+    Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(start = 10.dp, top = 10.dp, bottom = 0.dp)
+            .padding(start = 10.dp, top = 10.dp, end = 10.dp)
             .then(modifier)
-    ) {
-        Text(
-            text = "Initial Balance"
-        )
-        Text(
-            text = tipViewModel.billTotal.toString(),
-            fontSize = 40.sp,
+    ){
+        Column(
             modifier = Modifier
-                .padding(top = 10.dp)
-        )
+                .fillMaxWidth()
+                .weight(1f)
+                //.padding(start = 10.dp, top = 10.dp, bottom = 0.dp)
+                .then(modifier)
+        ) {
+            Card(
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                ),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .fillMaxHeight()
+                    .padding(end = 10.dp)
+            ) {
+                Column(
+                    modifier = Modifier
+                        .padding(top = 10.dp, start = 10.dp)
+                ) {
+                    Text(
+                        text = "Initial Balance"
+                    )
+                    Text(
+                        text = tipViewModel.billTotal.toString(),
+                        fontSize = 25.sp,
+                        modifier = Modifier
+                            .padding(top = 10.dp)
+                    )
+                }
+
+            }
+
+        }
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f),
+                horizontalAlignment = Alignment.End
+        ){
+            Card(
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                ),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .fillMaxHeight()
+                    .padding(start = 10.dp)
+            ) {
+                Column(
+                    modifier = Modifier
+                        .padding(start = 10.dp, top = 10.dp)
+                ) {
+                    Text(
+                        text = "Total Tax"
+                    )
+                    Text(
+                        text = tipViewModel.taxTotal.toString(),
+                        fontSize = 25.sp,
+                        modifier = Modifier
+                            .padding(top = 10.dp)
+                    )
+                }
+
+            }
+        }
     }
+
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -160,12 +232,12 @@ fun TipPercentView(
         .fillMaxWidth()
         .padding(start = 10.dp, end = 10.dp)
         .then(modifier)) {
-        Text(text = "Tip Percentage")
+        //Text(text = "Tip Calculator")
         val options = listOf("10%", "15%", "18%", "20%", "Custom")
         SingleChoiceSegmentedButtonRow(
             modifier = Modifier
                 .padding(top = 20.dp)
-
+                .fillMaxWidth()
         ) {
             options.forEachIndexed { index, label ->
                 SegmentedButton(
@@ -314,30 +386,6 @@ fun CalculatorRow(values: List<ButtonSpec>, modifier: Modifier, tipViewModel: Ti
     }
 }
 
-
-/*@Composable
-fun KeypadRow(
-    numbers: Array<String> = arrayOf("1", "2", "3"),
-    modifier: Modifier = Modifier
-)
-{
-    Row(
-        modifier = Modifier
-            .fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceEvenly
-    ){
-        CalculatorButton(numbers[0], modifier = Modifier
-            .weight(1f)
-            .aspectRatio(1f))
-        CalculatorButton(numbers[1], modifier = Modifier
-            .weight(1f)
-            .aspectRatio(1f))
-        CalculatorButton(numbers[2], modifier = Modifier
-            .weight(1f)
-            .aspectRatio(1f))
-    }
-}*/
-
 @Composable
 fun CalculatorButton(buttonSpec: ButtonSpec, modifier: Modifier, tipViewModel: TipViewModel)
 {
@@ -358,6 +406,130 @@ fun CalculatorButton(buttonSpec: ButtonSpec, modifier: Modifier, tipViewModel: T
 }
 
 @Composable
+fun SplitOverview(modifier: Modifier, tipViewModel: TipViewModel)
+{
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .fillMaxHeight()
+            .padding(8.dp)
+            .then(modifier)
+    ){
+        Card(
+            colors = CardDefaults.cardColors(
+                containerColor = colorScheme.surfaceVariant,
+            ), modifier = Modifier.weight(1f)
+
+        ){
+            Column(modifier = Modifier
+                .weight(1f)
+                .fillMaxHeight()
+                .padding(16.dp)
+            ) {
+                var perPersonLabel = "Split By"
+                Text(text = perPersonLabel, fontSize = 16.sp, modifier = Modifier.weight(1f))
+                Text(text = tipViewModel.splitBy.toString(), fontSize = 20.sp, textAlign = TextAlign.Center, modifier = Modifier
+                    .weight(1f)
+                    .fillMaxWidth())
+                Row(
+                    modifier = Modifier
+                        .padding(top = 10.dp)
+                        .weight(1f)
+                        .fillMaxHeight()
+                        .padding(end = 3.dp),
+                ) {
+                    Button(
+                        onClick =
+                        {
+                            tipViewModel.updateSplitBy(isIncrement = false)
+                            tipViewModel.calculatePerAmount()
+                        },
+                        modifier = Modifier
+                            .fillMaxHeight()
+                            .width(80.dp)
+                    ) {
+                        Text(text = "-")
+                    }
+                    Button(
+                        onClick =
+                        {
+                            tipViewModel.updateSplitBy(isIncrement = true)
+                            tipViewModel.calculatePerAmount()
+                        },
+                        modifier = Modifier
+                            .fillMaxHeight()
+                            .width(80.dp)
+                            .padding(start = 3.dp)
+                    ) {
+                        Text(text = "+")
+                    }
+                }
+            }
+        }
+        Card(
+            colors = CardDefaults.cardColors(
+                containerColor = colorScheme.surfaceVariant,
+            ), modifier = Modifier
+                .weight(1f)
+                .fillMaxHeight()
+                .padding(start = 8.dp)
+        ){
+            Column(modifier = Modifier.padding(16.dp).fillMaxHeight().fillMaxWidth()) {
+                Text(text = "Per Person", modifier = Modifier.weight(1f))
+                Text(tipViewModel.perPersonAmount.toString(), fontSize = 20.sp, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth().fillMaxHeight().weight(1f))
+                Box(modifier = Modifier.weight(1f))
+            }
+        }
+    }
+}
+
+@Composable
+fun TotalOverview(modifier: Modifier, tipViewModel: TipViewModel)
+{
+    val tipCalcState = remember {
+        TipViewModel()
+    }
+
+    Card(
+        colors = CardDefaults.cardColors(
+            containerColor = colorScheme.surfaceVariant,
+        ),
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(200.dp)
+            .padding(start = 8.dp, top = 8.dp, end = 8.dp)
+            .then(modifier)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .fillMaxHeight()
+                .padding(16.dp)
+        ) {
+            Column(modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f)) {
+                Text("Total + Tip", fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                Text(text = tipViewModel.totalWithTip.toString())
+            }
+            VerticalDivider()
+            Column(modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f)
+                .padding(start = 8.dp),
+                horizontalAlignment = Alignment.End
+            ){
+                Text("Subtotal")
+                Text(text = tipViewModel.billTotal.toString())
+                Text(text ="Tip")
+                Text(text = tipViewModel.taxTotal.toString())
+            }
+        }
+
+    }
+}
+
+@Composable
 fun Greeting(name: String, modifier: Modifier = Modifier) {
     Text(
         text = "Hello $name!",
@@ -365,10 +537,11 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
     )
 }
 
-@Preview(showBackground = true)
+@Preview(showBackground = true, device = Devices.PIXEL_2)
 @Composable
 fun GreetingPreview() {
     ComposeTipCalculatorTheme {
         MainCalculator()
+
     }
 }
