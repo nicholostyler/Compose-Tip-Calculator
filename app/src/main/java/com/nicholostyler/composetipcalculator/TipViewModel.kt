@@ -6,6 +6,11 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import java.math.RoundingMode
+import java.text.DecimalFormat
+import kotlin.math.round
+import kotlin.math.roundToInt
+import kotlin.math.roundToLong
 
 class TipViewModel : ViewModel() {
     private var _isCents = false
@@ -32,7 +37,13 @@ class TipViewModel : ViewModel() {
         // update values on first launch
         updateSelectedTipPercentage(selectedTipPercentage)
         var billWithTip = billTotal + (billTotal * tipPercent)
-        perPersonAmount = billWithTip / splitBy
+        perPersonAmount = (billWithTip / splitBy)
+
+        val df = DecimalFormat("#.##")
+        df.roundingMode = RoundingMode.CEILING
+
+        val billFormat = df.format(perPersonAmount)
+        perPersonAmount = billFormat.toDouble()
     }
 
     fun updateSelectedTipPercentage(newValue: Int) {
