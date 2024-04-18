@@ -100,6 +100,11 @@ class TipViewModel : ViewModel() {
             updateIsCents()
             return
         }
+        else if (newNumber == "x")
+        {
+            deleteButtonClick()
+            return;
+        }
 
         //TODO add error handling
         var label = billTotal.toString()
@@ -128,6 +133,44 @@ class TipViewModel : ViewModel() {
         else {
             _isCents = true
         }
+    }
+
+    fun deleteButtonClick()
+    {
+        var subtotal = billTotal.toString()
+        var deletedSubtotal: String = ""
+
+        if (isCents)
+        {
+            deletedSubtotal = subtotal.substring(0, subtotal.length - 1)
+            if (deletedSubtotal[deletedSubtotal.length - 1] == '.')
+            {
+                // change isCents to false
+                _isCents = false
+                deletedSubtotal = subtotal.substring(0, subtotal.length - 1)
+            }
+        }
+        else
+        {
+            if (!isCents)
+            {
+                val splitTotalString = subtotal.split(".")
+                val beforeCents = splitTotalString[0]
+                if (beforeCents.length == 1)
+                {
+                    // reset to 0.00
+                    deletedSubtotal = "0.00"
+                }
+                else
+                {
+                    deletedSubtotal = beforeCents.substring(0, beforeCents.length - 1)
+                }
+            }
+        }
+
+        //TODO: Add error handling
+        billTotal = deletedSubtotal.toDouble()
+        calculatePerAmount()
     }
 
 }

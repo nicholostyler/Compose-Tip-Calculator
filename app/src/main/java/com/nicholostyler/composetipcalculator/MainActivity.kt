@@ -37,14 +37,25 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.outlined.DateRange
+import androidx.compose.material.icons.outlined.Home
+import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MaterialTheme.colorScheme
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
@@ -60,6 +71,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -67,6 +79,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.text.font.FontWeight
@@ -78,8 +91,26 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.view.WindowCompat
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.nicholostyler.composetipcalculator.ui.theme.ComposeTipCalculatorTheme
 import java.time.format.TextStyle
+
+data class TabBarItem(
+    val title: String,
+    val selectedIcon: ImageVector,
+    val unselectedIcon: ImageVector,
+    val badgeAmount: Int? = null
+)
+
+enum class Screens()
+{
+    Home,
+    History,
+    Settings
+}
+
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -96,6 +127,17 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
+            // Setting up the individual tabs
+            val homeTab = TabBarItem(title = "Home", selectedIcon = Icons.Filled.Home, unselectedIcon = Icons.Outlined.Home)
+            val historyTab = TabBarItem(title = "History", selectedIcon = Icons.Filled.DateRange, unselectedIcon = Icons.Outlined.DateRange)
+            val settingsTab = TabBarItem(title = "Settings", selectedIcon = Icons.Filled.Settings, unselectedIcon = Icons.Outlined.Settings)
+
+            val tabBarItems = listOf(homeTab, historyTab, settingsTab)
+
+            val navController = rememberNavController()
+            var selectedItemIndex by rememberSaveable {
+                mutableStateOf(0)
+            }
 
             ComposeTipCalculatorTheme {
                 // A surface container using the 'background' color from the theme
@@ -103,11 +145,46 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier
                         .fillMaxSize()
                         .safeDrawingPadding(),
-                    color = colorScheme.background
+                    color = colorScheme.background,
+
 
                 ) {
+                    Scaffold(
+                        bottomBar = {
+                            NavigationBar {
+                                tabBarItems.forEachIndexed { index, item ->
+                                    NavigationBarItem(
+                                        selected = selectedItemIndex == index,
+                                        onClick = {
+                                            selectedItemIndex = index
+                                            navController.navigate(item.title)
+                                        },
+                                        icon = {
+                                            Icon(
+                                                imageVector =
+                                                if (index == selectedItemIndex) {
+                                                    item.selectedIcon
+                                                } else item.unselectedIcon,
+                                                contentDescription = item.title
+                                            )
+                                        }, label = {Text(text = item.title)}
 
-                    MainCalculator()
+                                    )
+                                }
+                            }
+                        }
+                    ){paddingValues ->
+
+                        NavHost(
+                            navController = navController,
+                            startDestination = Screens.Home.name,
+                            modifier = Modifier.padding(paddingValues)
+                        ){
+                            composable("home") { MainCalculator()}
+                            composable("history") {Text("history")}
+                            composable("settings") {Text("settings")}
+                        }
+                    }
                 }
             }
         }
@@ -474,9 +551,15 @@ fun SplitOverview(modifier: Modifier, tipViewModel: TipViewModel)
                 .fillMaxHeight()
                 .padding(start = 8.dp)
         ){
-            Column(modifier = Modifier.padding(16.dp).fillMaxHeight().fillMaxWidth()) {
+            Column(modifier = Modifier
+                .padding(16.dp)
+                .fillMaxHeight()
+                .fillMaxWidth()) {
                 Text(text = "Per Person", modifier = Modifier.weight(1f))
-                Text(tipViewModel.perPersonAmount.toString(), fontSize = 20.sp, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth().fillMaxHeight().weight(1f))
+                Text(tipViewModel.perPersonAmount.toString(), fontSize = 20.sp, textAlign = TextAlign.Center, modifier = Modifier
+                    .fillMaxWidth()
+                    .fillMaxHeight()
+                    .weight(1f))
                 Box(modifier = Modifier.weight(1f))
             }
         }
