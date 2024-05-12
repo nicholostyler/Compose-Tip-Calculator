@@ -170,7 +170,7 @@ fun MainCalculator(isWideDisplay: Boolean)
                 HorizontalDivider(modifier = Modifier.padding(8.dp))
                 Keypad(modifier = Modifier.weight(2f), tipCalcState)
             }
-            PercentCardsList(tipViewModel = tipCalcState)
+            PercentCardsList(modifier = Modifier.weight(1f),tipViewModel = tipCalcState)
         }
 
     }
@@ -197,27 +197,31 @@ fun PercentCardsList(
     // Create list of percent values
     var percentArray = arrayOf(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20)
     // Create list of cards
-    LazyColumn{
+    LazyColumn(modifier = modifier.fillMaxWidth()){
         items(percentArray) { percent ->
-            TipCard(percent, tipViewModel)
+            var total = tipViewModel.calculatePerAmount(percent)
+            TipCard(percent, total, tipViewModel)
         }
     }
 }
 
 @Composable
-fun TipCard(percent: Int, tipViewModel: TipViewModel)
+fun TipCard(percent: Int, totalValue: Double, tipViewModel: TipViewModel)
 {
     Card(modifier = Modifier
         .padding(8.dp)
-        .size(width = 240.dp, height = 120.dp))
+        .height(height = 120.dp)
+    )
     {
         Column(
             Modifier.fillMaxSize()
         ){
             Text(text = "Total at $percent%", modifier = Modifier.padding(8.dp))
-            Text(text = "$9.25", modifier = Modifier
+            Text(text = totalValue.toString(), modifier = Modifier
                 .fillMaxWidth().padding(start = 8.dp), textAlign = TextAlign.Start, fontWeight = FontWeight.Bold)
-            TextButton(onClick = { /*TODO*/ }, modifier = Modifier.align(alignment = Alignment.End).padding(8.dp)) {
+            TextButton(onClick = {
+                tipViewModel.updateSelectedPercentage(percent)
+                                 }, modifier = Modifier.align(alignment = Alignment.End).padding(8.dp)) {
                 Text(text = "Select")
             }
         }
@@ -332,7 +336,7 @@ fun TipPercentView(
                         // add custom tip dialog
                         tipViewModel.updateSelectedTipPercentage(index)
                               },
-                    selected = index == tipViewModel.selectedTipPercentage
+                    selected = index == tipViewModel.selectedSegmentedTip
                 ) {
                     Text(label)
                 }
@@ -598,19 +602,15 @@ fun TotalOverview(modifier: Modifier, tipViewModel: TipViewModel)
                 .padding(start = 8.dp),
                 horizontalAlignment = Alignment.End
             ){
+                var selectedTipPercentage = tipViewModel.selectedTipPercentage.toString()
                 Text("Total + Tip")
                 Text(text = tipViewModel.totalWithTip.toString())
-                Text(text ="Tip")
+                Text(text ="Tip ($selectedTipPercentage%)")
                 Text(text = tipViewModel.taxTotal.toString())
             }
         }
 
     }
-}
-
-@Composable
-fun isTablet(): Boolean {
-    return LocalConfiguration.current.screenWidthDp >= 600
 }
 
 @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)

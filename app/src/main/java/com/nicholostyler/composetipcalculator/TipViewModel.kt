@@ -37,6 +37,9 @@ class TipViewModel : ViewModel() {
     var totalWithTip by mutableDoubleStateOf(0.0)
         private set
 
+    var selectedSegmentedTip by mutableIntStateOf(3)
+        private set
+
     fun calculatePerAmount()
     {
         // update values on first launch
@@ -58,15 +61,40 @@ class TipViewModel : ViewModel() {
         totalWithTip = billFormat.toDouble()
     }
 
+    fun calculatePerAmount(newPercent: Int) : Double
+    {
+        var newTaxTotal = billTotal * newPercent
+        var totalWithTip = billTotal + newTaxTotal
+        return totalWithTip
+    }
+
     fun updateSelectedTipPercentage(newValue: Int) {
         if (newValue >= 5) return
         when (newValue)
         {
-            0 -> updateTipPercentage(0.10)
-            1 -> updateTipPercentage(0.15)
-            2 -> updateTipPercentage(0.18)
-            3 -> updateTipPercentage(0.20)
+            0 -> {
+                updateTipPercentage(0.10)
+                selectedTipPercentage = 10
+            }
+            1 -> {
+                updateTipPercentage(0.15)
+                selectedTipPercentage = 15
+            }
+            2 -> {
+                updateTipPercentage(0.18)
+                selectedTipPercentage = 18
+            }
+            3 -> {
+                updateTipPercentage(0.20)
+                selectedTipPercentage = 20
+            }
         }
+        selectedSegmentedTip = newValue
+    }
+
+    fun updateSelectedPercentage(newValue: Int) {
+        var doubleValue: Double = (newValue.toDouble() * 1/100)
+        tipPercent = doubleValue
         selectedTipPercentage = newValue
     }
 
@@ -127,6 +155,11 @@ class TipViewModel : ViewModel() {
 
         val newBalance = newLabel.toDouble()
         billTotal = newBalance
+    }
+
+    fun updateBillTotal(newPercent: Double)
+    {
+
     }
 
     fun updateIsCents()
