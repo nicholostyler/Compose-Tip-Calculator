@@ -51,8 +51,11 @@ android {
 
 dependencies {
     val nav_version = "2.7.7"
+    val windowmanager_version = "1.1.0"
 
     implementation(libs.androidx.core.ktx)
+    implementation("androidx.window:window:$windowmanager_version")
+    implementation("com.google.accompanist:accompanist-adaptive:0.34.0")
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
     implementation(platform(libs.androidx.compose.bom))
@@ -60,6 +63,7 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3.android)
+    implementation("androidx.compose.material3:material3-window-size-class:1.2.1")
     implementation("androidx.navigation:navigation-compose:$nav_version")
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

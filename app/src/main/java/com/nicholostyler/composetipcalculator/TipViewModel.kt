@@ -15,7 +15,6 @@ import kotlin.math.roundToLong
 class TipViewModel : ViewModel() {
     private var _isCents = false
     private var tipPercent = 0.00
-    private var _count = 0
 
     val isCents: Boolean
         get() = _isCents
@@ -103,19 +102,22 @@ class TipViewModel : ViewModel() {
         else if (newNumber == "x")
         {
             deleteButtonClick()
-            return;
+            return
         }
 
         //TODO add error handling
-        var label = billTotal.toString()
-        var newLabel = ""
-        var split = label.split(".")
-        var beforeCents = split[0]
-        var afterCents = split[1]
+        val label = billTotal.toString()
+        val newLabel: String
+        val split = label.split(".")
+        val beforeCents = split[0]
+        val afterCents = split[1]
         if (isCents)
         {
             if (afterCents.length == 2) return
-            newLabel = beforeCents + "." + newNumber
+            if (afterCents == "0")
+                newLabel = beforeCents + "." + newNumber
+            else
+                newLabel = beforeCents + "." + afterCents + newNumber
         }
         else
         {
@@ -123,7 +125,7 @@ class TipViewModel : ViewModel() {
             else newLabel = beforeCents + newNumber + ".00"
         }
 
-        var newBalance = newLabel.toDouble()
+        val newBalance = newLabel.toDouble()
         billTotal = newBalance
     }
 
@@ -137,7 +139,7 @@ class TipViewModel : ViewModel() {
 
     fun deleteButtonClick()
     {
-        var subtotal = billTotal.toString()
+        val subtotal = billTotal.toString()
         var deletedSubtotal: String = ""
 
         if (isCents)
