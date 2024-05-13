@@ -11,13 +11,13 @@ Features:
 
 ✅Change Tip Percentage
 
-🧰Use Custom Tip Percentage (on phones)
+✅Use Custom Tip Percentage (on phones)
 
 Phone Layout:
 
 ✅Portrait Phone Layout
 
-🧰Landscape Phone Layout
+✅Landscape Phone Layout
 
 Foldables:
 
