@@ -1,9 +1,11 @@
 package com.nicholostyler.composetipcalculator
 
+import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import java.math.RoundingMode
@@ -15,6 +17,7 @@ import kotlin.math.roundToLong
 class TipViewModel : ViewModel() {
     private var _isCents = false
     private var tipPercent = 0.00
+    private val _openCustomDisplay = mutableStateOf(false)
 
     val isCents: Boolean
         get() = _isCents
@@ -37,8 +40,16 @@ class TipViewModel : ViewModel() {
     var totalWithTip by mutableDoubleStateOf(0.0)
         private set
 
-    var selectedSegmentedTip by mutableIntStateOf(3)
+    var selectedSegmentedTip by mutableIntStateOf(4)
         private set
+
+    var openCustomDisplay: State<Boolean> = _openCustomDisplay
+
+
+    fun changeCustomDisplay()
+    {
+        _openCustomDisplay.value = !_openCustomDisplay.value
+    }
 
     fun calculatePerAmount()
     {
@@ -96,6 +107,7 @@ class TipViewModel : ViewModel() {
         var doubleValue: Double = (newValue.toDouble() * 1/100)
         tipPercent = doubleValue
         selectedTipPercentage = newValue
+        selectedSegmentedTip = 4
     }
 
     fun updateTipPercentage(newValue: Double) {

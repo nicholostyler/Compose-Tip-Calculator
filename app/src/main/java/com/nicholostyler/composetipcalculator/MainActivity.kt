@@ -49,6 +49,7 @@ import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.outlined.DateRange
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Settings
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -61,6 +62,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MaterialTheme.colorScheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.OutlinedButton
@@ -75,16 +77,20 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.VerticalDivider
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
+import androidx.compose.material3.windowsizeclass.WindowHeightSizeClass
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -112,47 +118,53 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.nicholostyler.composetipcalculator.ui.theme.ComposeTipCalculatorTheme
+import kotlinx.coroutines.launch
 import java.time.format.TextStyle
 
 @ExperimentalMaterial3WindowSizeClassApi
 class MainActivity : ComponentActivity() {
     private var windowInfoTracker: WindowInfoTracker =
         WindowInfoTracker.getOrCreate(this@MainActivity)
-
     override fun onCreate(savedInstanceState: Bundle?) {
         // Enable edge to edge
         enableEdgeToEdge(
         )
+
         super.onCreate(savedInstanceState)
 
         setContent {
             ComposeTipCalculatorTheme {
                 // Check if device is wide display
-                val isWideDisplay = isWideDisplay(this)
                 Surface(
                     modifier = Modifier
                         .fillMaxSize(),
                     color = colorScheme.background,
                 ) {
-                    MainCalculator(isWideDisplay)
+                    MainCalculator(this)
                 }
             }
         }
     }
 }
 
+@OptIn(ExperimentalMaterial3WindowSizeClassApi::class, ExperimentalMaterial3Api::class)
 @Composable
-fun MainCalculator(isWideDisplay: Boolean)
+fun MainCalculator(activity: Activity)
 {
+    val windowSizeClass = calculateWindowSizeClass(activity = activity)
+
     // main ViewModel
     val tipCalcState = remember {
         TipViewModel()
     }
 
+    val sheetState = rememberModalBottomSheetState()
+    val scope = rememberCoroutineScope()
     // run calculate based on default values
     tipCalcState.calculatePerAmount()
 
-    if (isWideDisplay)
+    // If is wide display (foldable/tablet)
+    if (windowSizeClass.widthSizeClass >= WindowWidthSizeClass.Medium && windowSizeClass.heightSizeClass >= WindowHeightSizeClass.Medium)
     {
         Row(
             modifier = Modifier
@@ -170,9 +182,32 @@ fun MainCalculator(isWideDisplay: Boolean)
                 HorizontalDivider(modifier = Modifier.padding(8.dp))
                 Keypad(modifier = Modifier.weight(2f), tipCalcState)
             }
-            PercentCardsList(modifier = Modifier.weight(1f),tipViewModel = tipCalcState)
+            PercentCardsList(modifier = Modifier.weight(1f), tipViewModel = tipCalcState)
         }
-
+    }
+    // Is a phone in landscape
+    // Is a phone/foldable in split view
+    // BUG: Can't hold 5 in segmented button view
+    else if (windowSizeClass.heightSizeClass <= WindowHeightSizeClass.Compact)
+    {
+        Row(
+            modifier = Modifier
+                .fillMaxSize()
+                .safeDrawingPadding()
+        )
+        {
+            Column(modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f)
+            ) {
+                TotalOverview(modifier = Modifier.weight(1f), tipCalcState)
+                SplitByOverview(modifier = Modifier.weight(.8f), tipCalcState)
+                TipPercentView(modifier = Modifier.weight(.5f), tipCalcState)
+                //HorizontalDivider(modifier = Modifier.padding(8.dp))
+                //Keypad(modifier = Modifier.weight(2f), tipCalcState)
+            }
+            Keypad(modifier = Modifier.weight(1f), tipCalcState)
+        }
     }
     else
     {
@@ -187,11 +222,24 @@ fun MainCalculator(isWideDisplay: Boolean)
         }
     }
 
+    // Display a modal bottom sheet when user clicks CUSTOM tip button
+    // BUG: Lags when closing with gesture nav
+    // potential fix: https://medium.com/@giuliopime/modalbottomsheet-and-the-system-navigation-bar-jetpack-compose-6e9bf58e8317
+    if (tipCalcState.openCustomDisplay.value)
+    {
+        ModalBottomSheet(
+            sheetState = sheetState,
+            onDismissRequest = { tipCalcState.changeCustomDisplay()}
+        ) {
+            PercentCardsList(tipViewModel = tipCalcState)
+        }
+    }
+
 }
 
 @Composable
 fun PercentCardsList(
-    modifier: Modifier = Modifier, tipViewModel: TipViewModel
+    modifier: Modifier = Modifier.fillMaxSize(), tipViewModel: TipViewModel
 )
 {
     // Create list of percent values
@@ -218,10 +266,18 @@ fun TipCard(percent: Int, totalValue: Double, tipViewModel: TipViewModel)
         ){
             Text(text = "Total at $percent%", modifier = Modifier.padding(8.dp))
             Text(text = totalValue.toString(), modifier = Modifier
-                .fillMaxWidth().padding(start = 8.dp), textAlign = TextAlign.Start, fontWeight = FontWeight.Bold)
+                .fillMaxWidth()
+                .padding(start = 8.dp), textAlign = TextAlign.Start, fontWeight = FontWeight.Bold)
             TextButton(onClick = {
                 tipViewModel.updateSelectedPercentage(percent)
-                                 }, modifier = Modifier.align(alignment = Alignment.End).padding(8.dp)) {
+                if (tipViewModel.openCustomDisplay.value)
+                {
+                    tipViewModel.changeCustomDisplay()
+                }
+                                 },
+                modifier = Modifier
+                    .align(alignment = Alignment.End)
+                    .padding(8.dp)) {
                 Text(text = "Select")
             }
         }
@@ -322,6 +378,7 @@ fun TipPercentView(
         .padding(start = 10.dp, end = 10.dp)
         .then(modifier)) {
         val options = listOf("10%", "15%", "18%", "20%", "Custom")
+        val openAlertDialog = remember { mutableStateOf(false)}
         SingleChoiceSegmentedButtonRow(
             modifier = Modifier
                 .padding(top = 20.dp)
@@ -334,11 +391,16 @@ fun TipPercentView(
                         //TODO:
                         //seperate into own method
                         // add custom tip dialog
+                        if (index == 4)
+                        {
+                            tipViewModel.changeCustomDisplay()
+                        }
                         tipViewModel.updateSelectedTipPercentage(index)
                               },
                     selected = index == tipViewModel.selectedSegmentedTip
                 ) {
                     Text(label)
+
                 }
             }
         }
@@ -517,7 +579,7 @@ fun SplitByOverview(modifier: Modifier, tipViewModel: TipViewModel)
                     .fillMaxWidth()
                     .weight(1f)
             ){
-                Text(text = "Per Person", fontSize = 15.sp)
+                Text(text = "Per Person", fontSize = 15.sp, fontWeight = FontWeight.Bold)
                 Row(
                     Modifier
                         .height(50.dp)
@@ -557,7 +619,7 @@ fun SplitByOverview(modifier: Modifier, tipViewModel: TipViewModel)
                     .weight(1f),
                     horizontalAlignment = Alignment.End
             ){
-                Text(text = "Per Person", fontSize = 15.sp)
+                Text(text = "Per Person", fontSize = 15.sp, fontWeight = FontWeight.Bold)
                 Box (Modifier.padding(top = 10.dp)){
                     Text(text = tipViewModel.perPersonAmount.toString(), fontSize = 30.sp)
                 }
@@ -603,9 +665,9 @@ fun TotalOverview(modifier: Modifier, tipViewModel: TipViewModel)
                 horizontalAlignment = Alignment.End
             ){
                 var selectedTipPercentage = tipViewModel.selectedTipPercentage.toString()
-                Text("Total + Tip")
+                Text("Total + Tip", fontWeight = FontWeight.Bold)
                 Text(text = tipViewModel.totalWithTip.toString())
-                Text(text ="Tip ($selectedTipPercentage%)")
+                Text(text ="Tip ($selectedTipPercentage%)", fontWeight = FontWeight.Bold)
                 Text(text = tipViewModel.taxTotal.toString())
             }
         }
@@ -627,16 +689,36 @@ fun isWideDisplay(activity: Activity = LocalContext.current as Activity): Boolea
     return isWideDisplay
 }
 
-@Preview(showBackground = true, device = Devices.PIXEL_FOLD)
+@OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
+@Composable
+fun isPhoneLandscape(activity: Activity = LocalContext.current as Activity): Boolean
+{
+    val windowSizeClass = calculateWindowSizeClass(activity = activity)
+    val isPhoneLandscape: Boolean by remember {
+        derivedStateOf {
+            windowSizeClass.heightSizeClass >= WindowHeightSizeClass.Compact
+        }
+    }
+    return isPhoneLandscape
+}
+
+//@Preview(showBackground = true, heightDp = 360, widthDp = 800)
+@Preview(showBackground = true, device = Devices.PIXEL_4)
 @Composable
 fun GreetingPreview() {
     ComposeTipCalculatorTheme {
-        MainCalculator(isWideDisplay = true)
         val tipCalcState = remember {
             TipViewModel()
         }
-        //TipCard(modifier = Modifier, tipCalcState)
-        //PercentCardsList(tipViewModel = tipCalcState)
+        Column(modifier = Modifier
+            .fillMaxSize()
+            .safeDrawingPadding()
+        ) {
+            TotalOverview(modifier = Modifier.weight(1f), tipCalcState)
+            SplitByOverview(modifier = Modifier.weight(.8f), tipCalcState)
+            TipPercentView(modifier = Modifier.weight(.5f), tipCalcState)
+            Keypad(modifier = Modifier.weight(2f), tipCalcState)
+        }
 
     }
 }
