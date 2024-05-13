@@ -25,7 +25,7 @@ class TipViewModel : ViewModel() {
     var billTotal by mutableDoubleStateOf( 0.0)
         private set
 
-    var selectedTipPercentage by mutableIntStateOf(3)
+    var selectedTipPercentage by mutableIntStateOf(18)
         private set
 
     var splitBy by mutableIntStateOf(2)
@@ -40,7 +40,7 @@ class TipViewModel : ViewModel() {
     var totalWithTip by mutableDoubleStateOf(0.0)
         private set
 
-    var selectedSegmentedTip by mutableIntStateOf(4)
+    var selectedSegmentedTip by mutableIntStateOf(2)
         private set
 
     var openCustomDisplay: State<Boolean> = _openCustomDisplay
@@ -54,7 +54,7 @@ class TipViewModel : ViewModel() {
     fun calculatePerAmount()
     {
         // update values on first launch
-        updateSelectedTipPercentage(selectedTipPercentage)
+        updateSelectedTipPercentage(selectedSegmentedTip)
         taxTotal = billTotal * tipPercent
         totalWithTip = billTotal + taxTotal
         perPersonAmount = (totalWithTip / splitBy)
@@ -74,9 +74,10 @@ class TipViewModel : ViewModel() {
 
     fun calculatePerAmount(newPercent: Int) : Double
     {
-        var newTaxTotal = billTotal * newPercent
-        var totalWithTip = billTotal + newTaxTotal
-        return totalWithTip
+        val newTipPercent = newPercent.toDouble() / 100
+        var newTaxTotal = billTotal * newTipPercent
+        var newTotalWithTip = billTotal + newTaxTotal
+        return newTotalWithTip
     }
 
     fun updateSelectedTipPercentage(newValue: Int) {
@@ -108,6 +109,7 @@ class TipViewModel : ViewModel() {
         tipPercent = doubleValue
         selectedTipPercentage = newValue
         selectedSegmentedTip = 4
+        calculatePerAmount()
     }
 
     fun updateTipPercentage(newValue: Double) {

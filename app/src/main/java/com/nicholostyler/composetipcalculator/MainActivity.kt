@@ -1,81 +1,41 @@
 package com.nicholostyler.composetipcalculator
 
 import android.app.Activity
-import androidx.window.layout.WindowInfoTracker
 import android.os.Bundle
-import android.view.WindowManager
 import androidx.activity.ComponentActivity
-import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeContentPadding
-import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.safeDrawingPadding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.DateRange
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.outlined.DateRange
-import androidx.compose.material.icons.outlined.Home
-import androidx.compose.material.icons.outlined.Settings
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CardElevation
-import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilledTonalButton
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
-import androidx.compose.material3.Slider
-import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TextField
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
@@ -83,48 +43,33 @@ import androidx.compose.material3.windowsizeclass.WindowHeightSizeClass
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.graphics.toArgb
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.layout.layout
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.style.LineHeightStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.view.WindowCompat
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
+import androidx.window.layout.WindowInfoTracker
 import com.nicholostyler.composetipcalculator.ui.theme.ComposeTipCalculatorTheme
-import kotlinx.coroutines.launch
-import java.time.format.TextStyle
+import java.text.NumberFormat
+import java.util.Currency
 
 @ExperimentalMaterial3WindowSizeClassApi
 class MainActivity : ComponentActivity() {
     private var windowInfoTracker: WindowInfoTracker =
         WindowInfoTracker.getOrCreate(this@MainActivity)
+
+    val tipCalcState: TipViewModel by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         // Enable edge to edge
         enableEdgeToEdge(
@@ -140,7 +85,7 @@ class MainActivity : ComponentActivity() {
                         .fillMaxSize(),
                     color = colorScheme.background,
                 ) {
-                    MainCalculator(this)
+                    MainCalculator(this, tipCalcState)
                 }
             }
         }
@@ -149,17 +94,12 @@ class MainActivity : ComponentActivity() {
 
 @OptIn(ExperimentalMaterial3WindowSizeClassApi::class, ExperimentalMaterial3Api::class)
 @Composable
-fun MainCalculator(activity: Activity)
+fun MainCalculator(activity: Activity, tipCalcState: TipViewModel)
 {
     val windowSizeClass = calculateWindowSizeClass(activity = activity)
-
-    // main ViewModel
-    val tipCalcState = remember {
-        TipViewModel()
-    }
-
     val sheetState = rememberModalBottomSheetState()
     val scope = rememberCoroutineScope()
+
     // run calculate based on default values
     tipCalcState.calculatePerAmount()
 
@@ -176,11 +116,11 @@ fun MainCalculator(activity: Activity)
                 .fillMaxWidth()
                 .weight(1f)
             ) {
-                TotalOverview(modifier = Modifier.weight(1f), tipCalcState)
-                SplitByOverview(modifier = Modifier.weight(.8f), tipCalcState)
+                TotalOverview(modifier = Modifier.weight(.25f), tipCalcState)
+                SplitByOverview(modifier = Modifier.weight(.25f), tipCalcState)
                 //TipPercentView(modifier = Modifier.weight(.5f), tipCalcState)
-                HorizontalDivider(modifier = Modifier.padding(8.dp))
-                Keypad(modifier = Modifier.weight(2f), tipCalcState)
+                //HorizontalDivider(modifier = Modifier.weight(.10f).align(Alignment.CenterHorizontally))
+                Keypad(modifier = Modifier.weight(.5f), tipCalcState)
             }
             PercentCardsList(modifier = Modifier.weight(1f), tipViewModel = tipCalcState)
         }
@@ -247,14 +187,18 @@ fun PercentCardsList(
     // Create list of cards
     LazyColumn(modifier = modifier.fillMaxWidth()){
         items(percentArray) { percent ->
-            var total = tipViewModel.calculatePerAmount(percent)
+            val format: NumberFormat = NumberFormat.getCurrencyInstance()
+            format.setMaximumFractionDigits(2)
+            format.setCurrency(Currency.getInstance("USD"))
+
+            val total = format.format(tipViewModel.calculatePerAmount(percent))
             TipCard(percent, total, tipViewModel)
         }
     }
 }
 
 @Composable
-fun TipCard(percent: Int, totalValue: Double, tipViewModel: TipViewModel)
+fun TipCard(percent: Int, totalValue: String, tipViewModel: TipViewModel)
 {
     Card(modifier = Modifier
         .padding(8.dp)
@@ -265,7 +209,7 @@ fun TipCard(percent: Int, totalValue: Double, tipViewModel: TipViewModel)
             Modifier.fillMaxSize()
         ){
             Text(text = "Total at $percent%", modifier = Modifier.padding(8.dp))
-            Text(text = totalValue.toString(), modifier = Modifier
+            Text(text = totalValue, modifier = Modifier
                 .fillMaxWidth()
                 .padding(start = 8.dp), textAlign = TextAlign.Start, fontWeight = FontWeight.Bold)
             TextButton(onClick = {
@@ -395,7 +339,10 @@ fun TipPercentView(
                         {
                             tipViewModel.changeCustomDisplay()
                         }
-                        tipViewModel.updateSelectedTipPercentage(index)
+                        else
+                        {
+                            tipViewModel.updateSelectedTipPercentage(index)
+                        }
                               },
                     selected = index == tipViewModel.selectedSegmentedTip
                 ) {
@@ -558,6 +505,12 @@ fun CalculatorButton(buttonSpec: ButtonSpec, modifier: Modifier, tipViewModel: T
 @Composable
 fun SplitByOverview(modifier: Modifier, tipViewModel: TipViewModel)
 {
+    val format: NumberFormat = NumberFormat.getCurrencyInstance()
+    format.setMaximumFractionDigits(2)
+    format.setCurrency(Currency.getInstance("USD"))
+
+    val convertedPerPerson = format.format(tipViewModel.perPersonAmount)
+
     Card(
         colors = CardDefaults.cardColors(
             containerColor = colorScheme.surfaceVariant,
@@ -579,7 +532,7 @@ fun SplitByOverview(modifier: Modifier, tipViewModel: TipViewModel)
                     .fillMaxWidth()
                     .weight(1f)
             ){
-                Text(text = "Per Person", fontSize = 15.sp, fontWeight = FontWeight.Bold)
+                Text(text = "Split By", fontSize = 15.sp, fontWeight = FontWeight.Bold)
                 Row(
                     Modifier
                         .height(50.dp)
@@ -621,7 +574,7 @@ fun SplitByOverview(modifier: Modifier, tipViewModel: TipViewModel)
             ){
                 Text(text = "Per Person", fontSize = 15.sp, fontWeight = FontWeight.Bold)
                 Box (Modifier.padding(top = 10.dp)){
-                    Text(text = tipViewModel.perPersonAmount.toString(), fontSize = 30.sp)
+                    Text(text = convertedPerPerson, fontSize = 30.sp)
                 }
             }
         }
@@ -631,6 +584,15 @@ fun SplitByOverview(modifier: Modifier, tipViewModel: TipViewModel)
 @Composable
 fun TotalOverview(modifier: Modifier, tipViewModel: TipViewModel)
 {
+    // Convert values to currency
+    val format: NumberFormat = NumberFormat.getCurrencyInstance()
+    format.setMaximumFractionDigits(2)
+    format.setCurrency(Currency.getInstance("USD"))
+
+    val convertedTotal = format.format(tipViewModel.billTotal)
+    val convertedTotalTip = format.format(tipViewModel.totalWithTip)
+    val convertedTipTotal = format.format(tipViewModel.taxTotal)
+
     val tipCalcState = remember {
         TipViewModel()
     }
@@ -655,7 +617,7 @@ fun TotalOverview(modifier: Modifier, tipViewModel: TipViewModel)
                 .fillMaxWidth()
                 .weight(1f)) {
                 Text("Bill Total", fontSize = 16.sp, fontWeight = FontWeight.Bold)
-                Text(text = tipViewModel.billTotal.toString())
+                Text(text = convertedTotal)
             }
             VerticalDivider()
             Column(modifier = Modifier
@@ -666,9 +628,9 @@ fun TotalOverview(modifier: Modifier, tipViewModel: TipViewModel)
             ){
                 var selectedTipPercentage = tipViewModel.selectedTipPercentage.toString()
                 Text("Total + Tip", fontWeight = FontWeight.Bold)
-                Text(text = tipViewModel.totalWithTip.toString())
+                Text(text = convertedTotalTip)
                 Text(text ="Tip ($selectedTipPercentage%)", fontWeight = FontWeight.Bold)
-                Text(text = tipViewModel.taxTotal.toString())
+                Text(text = convertedTipTotal)
             }
         }
 
@@ -703,21 +665,30 @@ fun isPhoneLandscape(activity: Activity = LocalContext.current as Activity): Boo
 }
 
 //@Preview(showBackground = true, heightDp = 360, widthDp = 800)
-@Preview(showBackground = true, device = Devices.PIXEL_4)
+@Preview(showBackground = true, device = Devices.PIXEL_FOLD)
 @Composable
 fun GreetingPreview() {
     ComposeTipCalculatorTheme {
         val tipCalcState = remember {
             TipViewModel()
         }
-        Column(modifier = Modifier
-            .fillMaxSize()
-            .safeDrawingPadding()
-        ) {
-            TotalOverview(modifier = Modifier.weight(1f), tipCalcState)
-            SplitByOverview(modifier = Modifier.weight(.8f), tipCalcState)
-            TipPercentView(modifier = Modifier.weight(.5f), tipCalcState)
-            Keypad(modifier = Modifier.weight(2f), tipCalcState)
+        Row(
+            modifier = Modifier
+                .fillMaxSize()
+                .safeDrawingPadding()
+        )
+        {
+            Column(modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f)
+            ) {
+                TotalOverview(modifier = Modifier.weight(.3f), tipCalcState)
+                SplitByOverview(modifier = Modifier.weight(.25f), tipCalcState)
+                //TipPercentView(modifier = Modifier.weight(.5f), tipCalcState)
+                //HorizontalDivider(modifier = Modifier.weight(.10f).align(Alignment.CenterHorizontally))
+                Keypad(modifier = Modifier.weight(.4f), tipCalcState)
+            }
+            PercentCardsList(modifier = Modifier.weight(1f), tipViewModel = tipCalcState)
         }
 
     }
