@@ -1,10 +1,13 @@
 package com.nicholostyler.composetipcalculator.components
 
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.SegmentedButton
+import androidx.compose.material3.SegmentedButtonColors
 import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Text
@@ -34,9 +37,9 @@ fun TipPercentView(
         ) {
             options.forEachIndexed { index, label ->
                 SegmentedButton(
-                    shape = SegmentedButtonDefaults.itemShape(index = index, count = options.size),
+                    shape = SegmentedButtonDefaults.itemShape(index = index, count = options.size,),
                     onClick = { percentButtonClick(index, tipViewModel) },
-                    selected = index == tipViewModel.selectedSegmentedTip
+                    selected = index == tipViewModel.selectedSegmentedTip,
                 ) {
                     Text(label)
 
