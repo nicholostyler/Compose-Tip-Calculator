@@ -29,7 +29,8 @@ fun TipPercentView(
         .fillMaxWidth()
         .padding(start = 10.dp, end = 10.dp)
         .then(modifier)) {
-        val options = listOf("10%","18%", "20%", "Custom")
+        //TODO: Change this based on screen size
+        val options = tipViewModel.segmentedButtonsList
         SingleChoiceSegmentedButtonRow(
             modifier = Modifier
                 .padding(top = 20.dp)
@@ -38,7 +39,7 @@ fun TipPercentView(
             options.forEachIndexed { index, label ->
                 SegmentedButton(
                     shape = SegmentedButtonDefaults.itemShape(index = index, count = options.size,),
-                    onClick = { percentButtonClick(index, tipViewModel) },
+                    onClick = { percentButtonClick(tipViewModel, options[index]) },
                     selected = index == tipViewModel.selectedSegmentedTip,
                 ) {
                     Text(label)
@@ -49,14 +50,14 @@ fun TipPercentView(
     }
 }
 
-fun percentButtonClick(index: Int, tipViewModel: TipViewModel)
+fun percentButtonClick(tipViewModel: TipViewModel, value: String)
 {
-    if (index == 4)
+    if (value == "Custom")
     {
         tipViewModel.changeCustomDisplay()
     }
     else
     {
-        tipViewModel.updateSelectedTipPercentage(index)
+        tipViewModel.updateSelectedTipPercentage(value)
     }
 }

@@ -16,11 +16,18 @@ import kotlin.math.roundToLong
 
 class TipViewModel : ViewModel() {
     private var _isCents = false
+    private var _segmentedButtonList = listOf("10%", "15%", "18%", "20%", "Custom")
     private var tipPercent = 0.00
     private val _openCustomDisplay = mutableStateOf(false)
 
     val isCents: Boolean
         get() = _isCents
+
+    var segmentedButtonsList: List<String> = listOf("10%", "15%", "18%", "20%", "Custom")
+        get() = _segmentedButtonList
+
+    var segmentedButtonCount by mutableIntStateOf(2)
+        private set
 
     var billTotal by mutableDoubleStateOf( 0.0)
         private set
@@ -45,6 +52,33 @@ class TipViewModel : ViewModel() {
 
     var openCustomDisplay: State<Boolean> = _openCustomDisplay
 
+    fun changeSegmentedButtonCount(buttonCount: Int)
+    {
+        if (buttonCount <= 0) return;
+        if (buttonCount >= 5) return;
+
+        when (buttonCount)
+        {
+            2 -> {
+                _segmentedButtonList = listOf("20%", "Custom")
+            }
+            3 -> {
+                _segmentedButtonList = listOf("18%", "20%", "Custom")
+            }
+            4 ->
+            {
+                _segmentedButtonList = listOf("15%", "18%", "20%", "Custom")
+            }
+            5 ->
+            {
+                _segmentedButtonList = listOf("10%", "15%", "18%", "20%", "Custom")
+            }
+
+        }
+
+        segmentedButtonCount = buttonCount
+    }
+
 
     fun changeCustomDisplay()
     {
@@ -54,7 +88,7 @@ class TipViewModel : ViewModel() {
     fun calculatePerAmount()
     {
         // update values on first launch
-        updateSelectedTipPercentage(selectedSegmentedTip)
+        updateSelectedTipPercentage("20%")
         taxTotal = billTotal * tipPercent
         totalWithTip = billTotal + taxTotal
         perPersonAmount = (totalWithTip / splitBy)
@@ -80,28 +114,17 @@ class TipViewModel : ViewModel() {
         return newTotalWithTip
     }
 
-    fun updateSelectedTipPercentage(newValue: Int) {
-        if (newValue >= 5) return
-        when (newValue)
-        {
-            0 -> {
-                updateTipPercentage(0.10)
-                selectedTipPercentage = 10
-            }
-            1 -> {
-                updateTipPercentage(0.15)
-                selectedTipPercentage = 15
-            }
-            2 -> {
-                updateTipPercentage(0.18)
-                selectedTipPercentage = 18
-            }
-            3 -> {
-                updateTipPercentage(0.20)
-                selectedTipPercentage = 20
-            }
-        }
-        selectedSegmentedTip = newValue
+    fun updateSelectedTipPercentage(newValue: String) {
+
+        // Convert to double and convert to percent
+        // Cut % sign from end of string
+        val newValue = newValue.substring(0, newValue.length - 1)
+        selectedTipPercentage = newValue.toInt()
+
+        val doubleValue: Double = newValue.toDouble()
+            (newValue.toDouble() * 1/100)
+
+        updateTipPercentage(doubleValue)
     }
 
     fun updateSelectedPercentage(newValue: Int) {

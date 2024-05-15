@@ -10,9 +10,11 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -23,9 +25,13 @@ import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Button
@@ -70,13 +76,20 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.window.layout.WindowInfoTracker
+import com.nicholostyler.composetipcalculator.components.CardGrid
 import com.nicholostyler.composetipcalculator.components.Keypad
 import com.nicholostyler.composetipcalculator.components.MainCalculator
+import com.nicholostyler.composetipcalculator.components.PerPersonCard
 import com.nicholostyler.composetipcalculator.components.PercentCardsList
+import com.nicholostyler.composetipcalculator.components.SplitByAddCard
 import com.nicholostyler.composetipcalculator.components.SplitByOverview
 import com.nicholostyler.composetipcalculator.components.TipPercentView
+import com.nicholostyler.composetipcalculator.components.TipSplitCard
+import com.nicholostyler.composetipcalculator.components.TipTopCard
 import com.nicholostyler.composetipcalculator.components.TopCards
 import com.nicholostyler.composetipcalculator.components.TotalOverview
+import com.nicholostyler.composetipcalculator.components.TotalTipCard
+import com.nicholostyler.composetipcalculator.components.TotalTopCard
 import com.nicholostyler.composetipcalculator.ui.theme.ComposeTipCalculatorTheme
 import java.text.NumberFormat
 import java.util.Currency
@@ -116,8 +129,8 @@ class MainActivity : ComponentActivity() {
 
 
 
-@Preview(showBackground = true, heightDp = 600, widthDp = 360)
-//@Preview(showBackground = true, device = Devices.PIXEL_7_PRO)
+@Preview(showBackground = true, heightDp = 250, widthDp = 450)
+@Preview(showBackground = true, device = Devices.PIXEL_7_PRO)
 @Preview(showBackground = true, device = Devices.PIXEL_4)
 //@Preview(showBackground = true, device = Devices.PIXEL_FOLD)
 //@Preview(showBackground = true, device = Devices.PIXEL_TABLET)
@@ -128,54 +141,9 @@ fun GreetingPreview()
         val tipCalcState = remember {
             TipViewModel()
         }
-        BoxWithConstraints(
-            modifier = Modifier
-                .fillMaxSize()
-                .safeDrawingPadding()
-        ) {
-            val boxWithConstraintsScope = this
 
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-            ) {
-                Box(modifier = Modifier
-                    .fillMaxWidth()
-                    .align(Alignment.End)
-                    .weight(.2f)) {
-                    Row(modifier = Modifier.fillMaxWidth())
-                    {
-                        Spacer(modifier = Modifier.weight(1f))
-                        IconButton(onClick = { /*TODO*/ }) {
-                            Icon(
-                                imageVector = Icons.Filled.Settings,
-                                contentDescription = "Settings",
-                                tint = Color.Black
-                            )
-                        }
-                        IconButton(onClick = { /*TODO*/ }, ) {
-                            Icon(painter = painterResource(id = R.drawable.copy_light), contentDescription = "Copy Tip")
-                        }
-                    }
-                }
-                if (boxWithConstraintsScope.minHeight < 550.dp)
-                {
-                    TopCards(modifier = Modifier.weight(weight = 1f), tipViewModel = tipCalcState)
-                    TipPercentView(modifier = Modifier.weight(.5f), tipCalcState)
-                    Keypad(modifier = Modifier.weight(2f), tipCalcState,)
-                } else
-                {
-                    //TotalOverview(modifier = Modifier.weight(1f), tipCalcState)
-                    TotalOverview(
-                        modifier = Modifier.weight(1.5f),
-                        tipViewModel = tipCalcState
-                    )
-                    SplitByOverview(modifier = Modifier.weight(1f), tipCalcState)
-                    //TopCards(modifier = Modifier.weight(1f), tipViewModel = tipCalcState)
-                    TipPercentView(modifier = Modifier.weight(.5f), tipCalcState)
-                    Keypad(modifier = Modifier.weight(2f), tipCalcState,)
-                }
-            }
-        }
+        CardGrid(modifier = Modifier, tipCalcState)
     }
 }
+
+

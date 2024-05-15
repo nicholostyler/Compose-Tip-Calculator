@@ -13,9 +13,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -30,8 +27,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.nicholostyler.composetipcalculator.TipViewModel
-import java.text.NumberFormat
-import java.util.Currency
 
 @Composable
 fun TopCards(modifier: Modifier, tipViewModel: TipViewModel) {
@@ -51,6 +46,26 @@ fun TopCards(modifier: Modifier, tipViewModel: TipViewModel) {
 
     }
     }
+
+@Composable
+fun SideCards(modifier: Modifier, tipViewModel: TipViewModel) {
+    LazyColumn(modifier = Modifier
+        //.horizontalScroll(rememberScrollState())
+        .then(modifier)
+        .fillMaxHeight())
+    {
+        items (count = 1) {
+            SplitByAddCard(modifier = modifier.height(100.dp), tipViewModel = tipViewModel)
+            TotalTopCard(modifier = modifier.height(100.dp), tipViewModel = tipViewModel)
+
+            PerPersonCard(modifier = modifier.height(100.dp), tipViewModel = tipViewModel)
+            TotalTipCard(modifier = modifier.height(100.dp), tipViewModel = tipViewModel)
+            TipTopCard(modifier = modifier.height(100.dp), tipViewModel = tipViewModel)
+            TipSplitCard(modifier = modifier.height(100.dp), tipViewModel = tipViewModel)
+        }
+
+    }
+}
 
 @Composable
 fun TipTopCard(modifier: Modifier = Modifier, tipViewModel: TipViewModel)

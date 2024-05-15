@@ -4,10 +4,13 @@ import android.app.Activity
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -51,6 +54,7 @@ fun MainCalculator(activity: Activity, tipCalcState: TipViewModel)
     // If is wide display (foldable/tablet)
     if (windowSizeClass.widthSizeClass >= WindowWidthSizeClass.Medium && windowSizeClass.heightSizeClass >= WindowHeightSizeClass.Medium)
     {
+        tipCalcState.changeSegmentedButtonCount(buttonCount = 5)
         Row(
             modifier = Modifier
                 .fillMaxSize()
@@ -63,8 +67,6 @@ fun MainCalculator(activity: Activity, tipCalcState: TipViewModel)
             ) {
                 TotalOverview(modifier = Modifier.weight(.25f), tipCalcState)
                 SplitByOverview(modifier = Modifier.weight(.25f), tipCalcState)
-                //TipPercentView(modifier = Modifier.weight(.5f), tipCalcState)
-                //HorizontalDivider(modifier = Modifier.weight(.10f).align(Alignment.CenterHorizontally))
                 Keypad(modifier = Modifier.weight(.5f), tipCalcState,)
             }
             PercentCardsList(modifier = Modifier.weight(1f), tipViewModel = tipCalcState)
@@ -72,10 +74,59 @@ fun MainCalculator(activity: Activity, tipCalcState: TipViewModel)
     }
     // Is a phone in landscape
     // Is a phone/foldable in split view
-    // BUG: Can't hold 5 in segmented button view
     else if (windowSizeClass.heightSizeClass <= WindowHeightSizeClass.Compact)
     {
-        BoxWithConstraints(modifier = Modifier.fillMaxSize().safeDrawingPadding()) {
+        // Set Segmented Button to 3
+        tipCalcState.changeSegmentedButtonCount(buttonCount = 3)
+        BoxWithConstraints(modifier = Modifier
+            .fillMaxSize()
+            .safeDrawingPadding()) {
+            val boxWithConstraintsScope = this
+
+            if (boxWithConstraintsScope.minHeight < 371.dp || boxWithConstraintsScope.minWidth < 550.dp)
+            {
+                tipCalcState.changeSegmentedButtonCount(buttonCount = 2)
+            }
+
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+            ) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .align(Alignment.End)
+                        .weight(.2f)
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .safeDrawingPadding()
+                    )
+                    {
+                        SideCards(modifier = Modifier.weight(1f), tipViewModel = tipCalcState)
+
+                        Column(
+                            modifier = Modifier.weight(1f)
+                        )
+                        {
+                            TipPercentView(modifier = Modifier.weight(.6f), tipCalcState)
+                            Keypad(modifier = Modifier.weight(2f), tipCalcState,)
+                        }
+
+                    }
+                }
+            }
+        }
+    }
+    // Is a regular phone view
+    else
+    {
+        tipCalcState.changeSegmentedButtonCount(buttonCount = 4)
+
+        BoxWithConstraints(modifier = Modifier
+            .fillMaxSize()
+            .safeDrawingPadding()) {
             val boxWithConstraintsScope = this
 
             Column(
@@ -106,93 +157,24 @@ fun MainCalculator(activity: Activity, tipCalcState: TipViewModel)
                         }
                     }
                 }
-                if (boxWithConstraintsScope.minHeight < 340.dp || boxWithConstraintsScope.minWidth < 371.dp)
+                if (boxWithConstraintsScope.minWidth < 290.dp)
                 {
-                    TopCards(modifier = Modifier.weight(weight = 1f), tipViewModel = tipCalcState)
-                    TipPercentView(modifier = Modifier.weight(.6f), tipCalcState)
-                    Keypad(modifier = Modifier.weight(2f), tipCalcState,)
-                } else
-                {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .safeDrawingPadding()
-                    )
-                    {
-                        Column(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .weight(.6f)
-                        ) {
-                            TotalOverview(modifier = Modifier.weight(1f), tipCalcState)
-                            SplitByOverview(modifier = Modifier.weight(.8f), tipCalcState)
-                            //TipPercentView(modifier = Modifier.weight(.5f), tipCalcState)
-                        }
-                        Column(
-                            modifier = Modifier.weight(1f)
-                        )
-                        {
-                            TipPercentView(modifier = Modifier, tipCalcState)
-                            Keypad(modifier = Modifier, tipCalcState,)
-                        }
-
-                    }
+                    tipCalcState.changeSegmentedButtonCount(buttonCount = 2)
+                    CardGrid(modifier = Modifier.weight(1f), tipCalcState)
+                    TipPercentView(modifier = Modifier.weight(1f), tipCalcState)
+                    Keypad(modifier = Modifier.weight(3f), tipCalcState,)
                 }
-            }
-        }
-    }
-    else
-    {
-        BoxWithConstraints(modifier = Modifier.fillMaxSize().safeDrawingPadding()) {
-            val boxWithConstraintsScope = this
-
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-            ) {
-                Box(modifier = Modifier
-                    .fillMaxWidth()
-                    .align(Alignment.End)
-                    .weight(.2f)) {
-                    Row(modifier = Modifier.fillMaxWidth())
-                    {
-                        Spacer(modifier = Modifier.weight(1f))
-                        IconButton(onClick = { /*TODO*/ }) {
-                            Icon(
-                                imageVector = Icons.Filled.Settings,
-                                contentDescription = "Settings",
-                                tint = Color.Black
-                            )
-                        }
-                        IconButton(onClick = { /*TODO*/ }, ) {
-                            Icon(painter = painterResource(id = R.drawable.copy_light), contentDescription = "Copy Tip")
-                        }
-                    }
+                else
+                {
+                    CardGrid(modifier = Modifier.weight(1f), tipCalcState)
+                    TipPercentView(modifier = Modifier.weight(.3f), tipCalcState)
+                    Keypad(modifier = Modifier.weight(1.5f), tipCalcState,)
                 }
-                if (boxWithConstraintsScope.minHeight < 550.dp)
-                {
-                    TopCards(modifier = Modifier.weight(weight = 1f), tipViewModel = tipCalcState)
-                    TipPercentView(modifier = Modifier.weight(.5f), tipCalcState)
-                    Keypad(modifier = Modifier.weight(2f), tipCalcState,)
-                } else
-                {
-                    //TotalOverview(modifier = Modifier.weight(1f), tipCalcState)
-                    TotalOverview(
-                        modifier = Modifier.weight(1.5f),
-                        tipViewModel = tipCalcState
-                    )
-                    SplitByOverview(modifier = Modifier.weight(1f), tipCalcState)
-                    //TopCards(modifier = Modifier.weight(1f), tipViewModel = tipCalcState)
-                    TipPercentView(modifier = Modifier.weight(.5f), tipCalcState)
-                    Keypad(modifier = Modifier.weight(2f), tipCalcState,)
                 }
             }
 
         }
 
-    }
-
-    // Display a modal bottom sheet when user clicks CUSTOM tip button
     // BUG: Lags when closing with gesture nav
     // potential fix: https://medium.com/@giuliopime/modalbottomsheet-and-the-system-navigation-bar-jetpack-compose-6e9bf58e8317
     if (tipCalcState.openCustomDisplay.value)
@@ -205,4 +187,26 @@ fun MainCalculator(activity: Activity, tipCalcState: TipViewModel)
         }
     }
 
+}
+
+
+@Composable
+fun CardGrid(modifier: Modifier, tipCalcState: TipViewModel)
+{
+    BoxWithConstraints {
+        val boxWithConstraintsScope = this
+
+        Column(
+            Modifier
+                .verticalScroll(rememberScrollState())
+                .fillMaxHeight()
+                .height(IntrinsicSize.Max)
+        ) {
+            TotalOverview(modifier = modifier.weight(1f), tipViewModel = tipCalcState)
+            SplitByOverview(
+                modifier = modifier
+                    .weight(1f), tipViewModel = tipCalcState
+            )
+        }
+    }
 }

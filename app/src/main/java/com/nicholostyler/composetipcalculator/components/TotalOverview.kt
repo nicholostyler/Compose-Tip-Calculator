@@ -25,73 +25,6 @@ import com.nicholostyler.composetipcalculator.TipViewModel
 import java.text.NumberFormat
 import java.util.Currency
 
-//@Composable
-//fun TotalOverview(modifier: Modifier, tipViewModel: TipViewModel)
-//{
-//    // Convert values to currency
-//    val format: NumberFormat = NumberFormat.getCurrencyInstance()
-//    format.setMaximumFractionDigits(2)
-//    format.setCurrency(Currency.getInstance("USD"))
-//
-//    val convertedTotal = format.format(tipViewModel.billTotal)
-//    val convertedTotalTip = format.format(tipViewModel.totalWithTip)
-//    val convertedTipTotal = format.format(tipViewModel.taxTotal)
-//
-//    val tipCalcState = remember {
-//        TipViewModel()
-//    }
-//
-//    Card(
-//        colors = CardDefaults.cardColors(
-//            containerColor = MaterialTheme.colorScheme.surfaceVariant,
-//        ),
-//        modifier = Modifier
-//            .fillMaxWidth()
-//            //.height(200.dp)
-//            .fillMaxHeight()
-//            .padding(start = 8.dp, top = 8.dp, end = 8.dp)
-//            .then(modifier)
-//    ) {
-//        Column(
-//            modifier = Modifier.fillMaxSize().padding(16.dp)
-//        ){
-//            Row(
-//                modifier = Modifier
-//                    .fillMaxWidth()
-//            ) {
-//                Column(modifier = Modifier
-//                    .fillMaxWidth()
-//                    .weight(1f)) {
-//                    Text("Bill Total", fontSize = 16.sp, fontWeight = FontWeight.Bold)
-//                    Text(text = convertedTotal)
-//                }
-//                Column(
-//                    modifier = Modifier
-//                        .fillMaxWidth()
-//                        .fillMaxHeight()
-//                        .weight(1f), horizontalAlignment = Alignment.End
-//                ){
-//                    Column(modifier = Modifier
-//                    ){
-//                        var selectedTipPercentage = tipViewModel.selectedTipPercentage.toString()
-//                        Text("Total + Tip", fontWeight = FontWeight.Bold)
-//                        Text(text = convertedTotalTip)
-//                        Text(text ="Tip ($selectedTipPercentage%)", fontWeight = FontWeight.Bold)
-//                        Text(text = convertedTipTotal)
-//                    }
-//                }
-//            }
-//            Box(modifier = Modifier.fillMaxSize()) {
-//                TextButton(onClick = { /*TODO*/ }) {
-//                    Text("Copy")
-//                }
-//            }
-//        }
-//
-//
-//    }
-//}
-
 @Composable
 fun TotalOverview(modifier: Modifier, tipViewModel: TipViewModel)
 {
@@ -127,7 +60,7 @@ fun TipCard(modifier: Modifier = Modifier, tipViewModel: TipViewModel)
         ) {
             Text("Tip Total (10%)", fontSize = 16.sp, fontWeight = FontWeight.Bold)
             Text(text = "$4.00")
-            Text("Tip Per Person", fontSize = 16.sp, fontWeight = FontWeight.Bold)
+            Text("Tip Per Person", fontSize = 16.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(top = 8.dp))
             Text(text = "$4.00")
         }
     }

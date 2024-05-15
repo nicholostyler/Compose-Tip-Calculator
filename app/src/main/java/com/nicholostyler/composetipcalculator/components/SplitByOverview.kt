@@ -75,8 +75,8 @@ fun SplitByCard(modifier: Modifier = Modifier, tipViewModel: TipViewModel)
 
         Box(modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp, start = 8.dp, end = 8.dp)) {
             Row(modifier = Modifier.fillMaxWidth()){
-                Button(modifier = Modifier.weight(1f).padding(end = 3.dp).size(size = 30.dp), onClick = {}){Text(text = "-")}
-                Button(modifier = Modifier.weight(1f).padding(start = 3.dp).size(size = 30.dp), onClick = {}){Text(text="+")}
+                Button(modifier = Modifier.weight(1f).padding(end = 3.dp), onClick = {}){Text(text = "-")}
+                Button(modifier = Modifier.weight(1f).padding(start = 3.dp), onClick = {}){Text(text="+")}
             }
         }
     }
@@ -96,102 +96,3 @@ fun SplitByOverview(modifier: Modifier = Modifier, tipViewModel: TipViewModel)
 
     }
 }
-//@Composable
-//fun SplitByOverview(modifier: Modifier, tipViewModel: TipViewModel)
-//{
-//    val format: NumberFormat = NumberFormat.getCurrencyInstance()
-//    format.setMaximumFractionDigits(2)
-//    format.setCurrency(Currency.getInstance("USD"))
-//
-//    val convertedPerPerson = format.format(tipViewModel.perPersonAmount)
-//
-//    Card(
-//        colors = CardDefaults.cardColors(
-//            containerColor = MaterialTheme.colorScheme.surfaceVariant,
-//        ),
-//        modifier = Modifier
-//            .fillMaxWidth()
-//            //.height(100.dp)
-//            .fillMaxHeight()
-//            .padding(start = 8.dp, top = 8.dp, end = 8.dp)
-//            .then(modifier)
-//    ){
-//        Box (modifier = Modifier.padding(16.dp).fillMaxSize()) {
-//            Row(
-//                modifier = Modifier
-//                    .fillMaxWidth()
-//                    //.fillMaxHeight()
-//
-//            ) {
-//                Column(
-//                    modifier = Modifier
-//                        .fillMaxWidth()
-//                        .weight(1f)
-//                ) {
-//                    Text(text = "Split By", fontSize = 15.sp, fontWeight = FontWeight.Bold)
-//                    Row(
-//                        Modifier
-//                            .height(50.dp)
-//                            .padding(top = 12.dp)
-//                    ) {
-//                        Button(
-//                            onClick = {
-//                                tipViewModel.updateSplitBy(isIncrement = false)
-//                                tipViewModel.calculatePerAmount()
-//                            }, contentPadding = PaddingValues(0.dp),
-//                            modifier = Modifier
-//                                .height(35.dp)
-//                                .width(50.dp)
-//                                .defaultMinSize(0.dp)
-//                        ) {
-//                            Text(text = "-")
-//                        }
-//                        Box(
-//                            modifier = Modifier
-//                                .fillMaxHeight()
-//                                .padding(start = 8.dp, end = 8.dp),
-//                            contentAlignment = Alignment.Center
-//                        ) {
-//                            Text(
-//                                text = tipViewModel.splitBy.toString(),
-//                                textAlign = TextAlign.Center
-//                            )
-//                        }
-//                        Button(
-//                            onClick = {
-//                                tipViewModel.updateSplitBy(isIncrement = true)
-//                                tipViewModel.calculatePerAmount()
-//                            }, contentPadding = PaddingValues(0.dp),
-//                            modifier = Modifier
-//                                .height(35.dp)
-//                                .width(50.dp)
-//                                .defaultMinSize(0.dp)
-//                        ) {
-//                            Text(text = "+")
-//                        }
-//                    }
-//                }
-//                Column(
-//                    modifier = Modifier
-//                        .fillMaxWidth()
-//                        .weight(1f),
-//                    horizontalAlignment = Alignment.End
-//                ) {
-//                    Text(text = "Per Person", fontSize = 15.sp, fontWeight = FontWeight.Bold)
-//                    Box(Modifier.padding(top = 10.dp)) {
-//                        Text(text = convertedPerPerson, fontSize = 30.sp)
-//                    }
-//                }
-//            }
-//            Column(modifier = Modifier.align(Alignment.BottomCenter)){
-//                HorizontalDivider()
-//                Box(contentAlignment = Alignment.BottomEnd) {
-//                    TextButton(onClick = { /*TODO*/ }) {
-//                        Text("Copy")
-//                    }
-//                }
-//            }
-//
-//        }
-//
-//    }
