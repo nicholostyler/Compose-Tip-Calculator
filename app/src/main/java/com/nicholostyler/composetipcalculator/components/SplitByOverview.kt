@@ -2,37 +2,38 @@ package com.nicholostyler.composetipcalculator.components
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.nicholostyler.composetipcalculator.TipViewModel
 import java.text.NumberFormat
 import java.util.Currency
+import java.util.Locale
 
 @Composable
 fun PerPersonAmountCard(modifier: Modifier = Modifier, tipViewModel: TipViewModel)
 {
+    // Create a NumberFormat instance
+    // with US currency and 2 decimal places
+    // TODO: Add option for currency selection
+    val format = NumberFormat.getCurrencyInstance()
+    format.maximumFractionDigits = 2
+    format.currency = Currency.getInstance(Locale.getDefault())
+
+    val perPerson = format.format(tipViewModel.perPersonAmount)
+
     Card(
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surfaceVariant,
@@ -48,7 +49,7 @@ fun PerPersonAmountCard(modifier: Modifier = Modifier, tipViewModel: TipViewMode
 
             .weight(1f)) {
             Text("Per Person", fontSize = 16.sp, fontWeight = FontWeight.Bold)
-            Text(text = "$4.00")
+            Text(text = perPerson)
         }
     }
 }
@@ -73,10 +74,16 @@ fun SplitByCard(modifier: Modifier = Modifier, tipViewModel: TipViewModel)
             Text(text = "1")
         }
 
-        Box(modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp, start = 8.dp, end = 8.dp)) {
+        Box(modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = 8.dp, start = 8.dp, end = 8.dp)) {
             Row(modifier = Modifier.fillMaxWidth()){
-                Button(modifier = Modifier.weight(1f).padding(end = 3.dp), onClick = {}){Text(text = "-")}
-                Button(modifier = Modifier.weight(1f).padding(start = 3.dp), onClick = {}){Text(text="+")}
+                Button(modifier = Modifier
+                    .weight(1f)
+                    .padding(end = 3.dp), onClick = {}){Text(text = "-")}
+                Button(modifier = Modifier
+                    .weight(1f)
+                    .padding(start = 3.dp), onClick = {}){Text(text="+")}
             }
         }
     }

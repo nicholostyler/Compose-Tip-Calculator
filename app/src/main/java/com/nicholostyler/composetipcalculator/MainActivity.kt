@@ -7,6 +7,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
@@ -81,6 +82,8 @@ import com.nicholostyler.composetipcalculator.components.Keypad
 import com.nicholostyler.composetipcalculator.components.MainCalculator
 import com.nicholostyler.composetipcalculator.components.PerPersonCard
 import com.nicholostyler.composetipcalculator.components.PercentCardsList
+import com.nicholostyler.composetipcalculator.components.SideCards
+import com.nicholostyler.composetipcalculator.components.SmallAppBar
 import com.nicholostyler.composetipcalculator.components.SplitByAddCard
 import com.nicholostyler.composetipcalculator.components.SplitByOverview
 import com.nicholostyler.composetipcalculator.components.TipPercentView
@@ -129,7 +132,7 @@ class MainActivity : ComponentActivity() {
 
 
 
-@Preview(showBackground = true, heightDp = 250, widthDp = 450)
+@Preview(showBackground = true, heightDp = 600, widthDp = 290)
 @Preview(showBackground = true, device = Devices.PIXEL_7_PRO)
 @Preview(showBackground = true, device = Devices.PIXEL_4)
 //@Preview(showBackground = true, device = Devices.PIXEL_FOLD)
@@ -141,9 +144,27 @@ fun GreetingPreview()
         val tipCalcState = remember {
             TipViewModel()
         }
+        Column(verticalArrangement = Arrangement.SpaceBetween){
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .fillMaxHeight()
+                    .verticalScroll(rememberScrollState())
 
-        CardGrid(modifier = Modifier, tipCalcState)
+            ) {
+                tipCalcState.changeSegmentedButtonCount(buttonCount = 2)
+
+                SmallAppBar(tipCalcState)
+                CardGrid(modifier = Modifier.height(250.dp), tipCalcState)
+                TipPercentView(modifier = Modifier.height(100.dp), tipCalcState)
+                Keypad(modifier = Modifier.height(IntrinsicSize.Min), tipCalcState,)
+
+            }
+        }
+
+
     }
-}
+    }
+
 
 

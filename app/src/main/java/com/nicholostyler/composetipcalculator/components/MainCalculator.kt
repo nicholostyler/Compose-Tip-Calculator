@@ -1,6 +1,7 @@
 package com.nicholostyler.composetipcalculator.components
 
 import android.app.Activity
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
@@ -65,6 +66,7 @@ fun MainCalculator(activity: Activity, tipCalcState: TipViewModel)
                 .fillMaxWidth()
                 .weight(1f)
             ) {
+                SmallAppBar(tipCalcState)
                 TotalOverview(modifier = Modifier.weight(.25f), tipCalcState)
                 SplitByOverview(modifier = Modifier.weight(.25f), tipCalcState)
                 Keypad(modifier = Modifier.weight(.5f), tipCalcState,)
@@ -105,15 +107,14 @@ fun MainCalculator(activity: Activity, tipCalcState: TipViewModel)
                     )
                     {
                         SideCards(modifier = Modifier.weight(1f), tipViewModel = tipCalcState)
-
                         Column(
                             modifier = Modifier.weight(1f)
                         )
                         {
+
                             TipPercentView(modifier = Modifier.weight(.6f), tipCalcState)
                             Keypad(modifier = Modifier.weight(2f), tipCalcState,)
                         }
-
                     }
                 }
             }
@@ -133,46 +134,24 @@ fun MainCalculator(activity: Activity, tipCalcState: TipViewModel)
                 modifier = Modifier
                     .fillMaxSize()
             ) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .align(Alignment.End)
-                        .weight(.2f)
-                ) {
-                    Row(modifier = Modifier.fillMaxWidth())
-                    {
-                        Spacer(modifier = Modifier.weight(1f))
-                        IconButton(onClick = { /*TODO*/ }) {
-                            Icon(
-                                imageVector = Icons.Filled.Settings,
-                                contentDescription = "Settings",
-                                tint = Color.Black
-                            )
-                        }
-                        IconButton(onClick = { /*TODO*/ },) {
-                            Icon(
-                                painter = painterResource(id = R.drawable.copy_light),
-                                contentDescription = "Copy Tip"
-                            )
-                        }
-                    }
-                }
+                SmallAppBar(tipCalcState)
                 if (boxWithConstraintsScope.minWidth < 290.dp)
                 {
                     tipCalcState.changeSegmentedButtonCount(buttonCount = 2)
-                    CardGrid(modifier = Modifier.weight(1f), tipCalcState)
-                    TipPercentView(modifier = Modifier.weight(1f), tipCalcState)
-                    Keypad(modifier = Modifier.weight(3f), tipCalcState,)
+                    //CardGrid(modifier = Modifier.weight(2f), tipCalcState)
+                    TotalOverview(modifier = Modifier.weight(1.2f), tipCalcState)
+                    SplitByOverview(modifier = Modifier.weight(.8f), tipCalcState)
+                    TipPercentView(modifier = Modifier.weight(.3f), tipCalcState)
+                    Keypad(modifier = Modifier.weight(1f), tipCalcState,)
                 }
                 else
                 {
                     CardGrid(modifier = Modifier.weight(1f), tipCalcState)
-                    TipPercentView(modifier = Modifier.weight(.3f), tipCalcState)
+                    TipPercentView(modifier = Modifier.weight(.4f), tipCalcState)
                     Keypad(modifier = Modifier.weight(1.5f), tipCalcState,)
                 }
                 }
             }
-
         }
 
     // BUG: Lags when closing with gesture nav
@@ -193,14 +172,10 @@ fun MainCalculator(activity: Activity, tipCalcState: TipViewModel)
 @Composable
 fun CardGrid(modifier: Modifier, tipCalcState: TipViewModel)
 {
-    BoxWithConstraints {
-        val boxWithConstraintsScope = this
-
         Column(
             Modifier
-                .verticalScroll(rememberScrollState())
-                .fillMaxHeight()
-                .height(IntrinsicSize.Max)
+                .fillMaxSize()
+                .then(modifier)
         ) {
             TotalOverview(modifier = modifier.weight(1f), tipViewModel = tipCalcState)
             SplitByOverview(
@@ -208,5 +183,4 @@ fun CardGrid(modifier: Modifier, tipCalcState: TipViewModel)
                     .weight(1f), tipViewModel = tipCalcState
             )
         }
-    }
 }

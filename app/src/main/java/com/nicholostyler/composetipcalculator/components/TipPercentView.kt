@@ -2,6 +2,7 @@ package com.nicholostyler.composetipcalculator.components
 
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -27,19 +28,19 @@ fun TipPercentView(
 {
     Column(modifier = Modifier
         .fillMaxWidth()
-        .padding(start = 10.dp, end = 10.dp)
+        //.fillMaxHeight()
+        .padding(start = 10.dp, end = 10.dp, top = 8.dp)
         .then(modifier)) {
-        //TODO: Change this based on screen size
         val options = tipViewModel.segmentedButtonsList
         SingleChoiceSegmentedButtonRow(
             modifier = Modifier
-                .padding(top = 20.dp)
+                //.padding(top = 20.dp)
                 .fillMaxWidth()
         ) {
             options.forEachIndexed { index, label ->
                 SegmentedButton(
                     shape = SegmentedButtonDefaults.itemShape(index = index, count = options.size,),
-                    onClick = { percentButtonClick(tipViewModel, options[index]) },
+                    onClick = { percentButtonClick(index, tipViewModel, options[index]) },
                     selected = index == tipViewModel.selectedSegmentedTip,
                 ) {
                     Text(label)
@@ -50,7 +51,7 @@ fun TipPercentView(
     }
 }
 
-fun percentButtonClick(tipViewModel: TipViewModel, value: String)
+fun percentButtonClick(index: Int, tipViewModel: TipViewModel, value: String)
 {
     if (value == "Custom")
     {
@@ -58,6 +59,6 @@ fun percentButtonClick(tipViewModel: TipViewModel, value: String)
     }
     else
     {
-        tipViewModel.updateSelectedTipPercentage(value)
+        tipViewModel.updateSelectedTipPercentage(index, value)
     }
 }

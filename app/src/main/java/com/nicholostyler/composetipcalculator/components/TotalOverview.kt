@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.sp
 import com.nicholostyler.composetipcalculator.TipViewModel
 import java.text.NumberFormat
 import java.util.Currency
+import java.util.Locale
 
 @Composable
 fun TotalOverview(modifier: Modifier, tipViewModel: TipViewModel)
@@ -31,7 +32,7 @@ fun TotalOverview(modifier: Modifier, tipViewModel: TipViewModel)
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .fillMaxHeight()
+            //.fillMaxHeight()
             .then(modifier)
     ) {
         TotalCard(modifier = Modifier.weight(1f), tipViewModel = tipViewModel)
@@ -43,12 +44,20 @@ fun TotalOverview(modifier: Modifier, tipViewModel: TipViewModel)
 @Composable
 fun TipCard(modifier: Modifier = Modifier, tipViewModel: TipViewModel)
 {
+    // Create a NumberFormat instance
+    // with US currency and 2 decimal places
+    val format = NumberFormat.getCurrencyInstance()
+    format.maximumFractionDigits = 2
+    format.currency = Currency.getInstance(Locale.getDefault())
+    val tipTotal = format.format(tipViewModel.taxTotal)
+    val tipPerPerson = format.format(tipViewModel.tipTotalWithSplit)
+
     Card(
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surfaceVariant,
         ),
         modifier = Modifier
-            .fillMaxSize()
+            //.fillMaxSize()
             .padding(start = 8.dp, top = 8.dp, end = 8.dp)
             .then(modifier)
     ) {
@@ -58,10 +67,10 @@ fun TipCard(modifier: Modifier = Modifier, tipViewModel: TipViewModel)
             .padding(16.dp)
             .weight(1f)
         ) {
-            Text("Tip Total (10%)", fontSize = 16.sp, fontWeight = FontWeight.Bold)
-            Text(text = "$4.00")
+            Text("Tip Total ${tipViewModel.selectedTipPercentage}%", fontSize = 16.sp, fontWeight = FontWeight.Bold)
+            Text(text = tipTotal)
             Text("Tip Per Person", fontSize = 16.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(top = 8.dp))
-            Text(text = "$4.00")
+            Text(text = tipPerPerson)
         }
     }
 }
@@ -69,6 +78,14 @@ fun TipCard(modifier: Modifier = Modifier, tipViewModel: TipViewModel)
 @Composable
 fun TotalCard(modifier: Modifier = Modifier, tipViewModel: TipViewModel)
 {
+    // Create a NumberFormat instance
+    // with US currency and 2 decimal places
+    val format = NumberFormat.getCurrencyInstance()
+    format.maximumFractionDigits = 2
+    format.currency = Currency.getInstance(Locale.getDefault())
+    val billTotal = format.format(tipViewModel.billTotal)
+    val totalWithTip = format.format(tipViewModel.totalWithTip)
+
     Card(
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surfaceVariant,
@@ -83,9 +100,9 @@ fun TotalCard(modifier: Modifier = Modifier, tipViewModel: TipViewModel)
             .padding(start = 16.dp, top = 16.dp, end = 16.dp)
             .weight(1f)) {
             Text("Bill Total", fontSize = 16.sp, fontWeight = FontWeight.Bold)
-            Text(text = "$4.00")
+            Text(text = billTotal)
             Text("Total With Tip", fontSize = 16.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(top = 8.dp))
-            Text(text = "$4.00")
+            Text(text = totalWithTip)
         }
     }
 }

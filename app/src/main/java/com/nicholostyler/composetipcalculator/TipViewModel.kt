@@ -32,7 +32,7 @@ class TipViewModel : ViewModel() {
     var billTotal by mutableDoubleStateOf( 0.0)
         private set
 
-    var selectedTipPercentage by mutableIntStateOf(18)
+    var selectedTipPercentage by mutableIntStateOf(20)
         private set
 
     var splitBy by mutableIntStateOf(2)
@@ -47,10 +47,19 @@ class TipViewModel : ViewModel() {
     var totalWithTip by mutableDoubleStateOf(0.0)
         private set
 
-    var selectedSegmentedTip by mutableIntStateOf(2)
+    var selectedSegmentedTip by mutableIntStateOf(0)
+        private set
+
+    var tipTotalWithSplit by mutableDoubleStateOf(0.0)
         private set
 
     var openCustomDisplay: State<Boolean> = _openCustomDisplay
+
+    init
+    {
+        selectedSegmentedTip = 0
+        tipPercent = .2
+    }
 
     fun changeSegmentedButtonCount(buttonCount: Int)
     {
@@ -76,7 +85,7 @@ class TipViewModel : ViewModel() {
 
         }
 
-        segmentedButtonCount = buttonCount
+        //segmentedButtonCount = buttonCount
     }
 
 
@@ -87,8 +96,6 @@ class TipViewModel : ViewModel() {
 
     fun calculatePerAmount()
     {
-        // update values on first launch
-        updateSelectedTipPercentage("20%")
         taxTotal = billTotal * tipPercent
         totalWithTip = billTotal + taxTotal
         perPersonAmount = (totalWithTip / splitBy)
@@ -104,6 +111,8 @@ class TipViewModel : ViewModel() {
 
         billFormat = df.format(totalWithTip)
         totalWithTip = billFormat.toDouble()
+
+        tipTotalWithSplit = taxTotal / splitBy
     }
 
     fun calculatePerAmount(newPercent: Int) : Double
@@ -114,24 +123,30 @@ class TipViewModel : ViewModel() {
         return newTotalWithTip
     }
 
-    fun updateSelectedTipPercentage(newValue: String) {
+    fun updateSelectedTipPercentage(index: Int, newValue: String) {
 
         // Convert to double and convert to percent
         // Cut % sign from end of string
+
+        if (newValue == "Custom") {
+            selectedSegmentedTip = _segmentedButtonList.size - 1
+        }
+
         val newValue = newValue.substring(0, newValue.length - 1)
         selectedTipPercentage = newValue.toInt()
 
-        val doubleValue: Double = newValue.toDouble()
-            (newValue.toDouble() * 1/100)
+        val doubleValue: Double = (newValue.toDouble() * 1/100)
 
         updateTipPercentage(doubleValue)
+        selectedSegmentedTip = index
     }
 
+    //TODO: Make this an overloaded method instead
     fun updateSelectedPercentage(newValue: Int) {
         var doubleValue: Double = (newValue.toDouble() * 1/100)
         tipPercent = doubleValue
         selectedTipPercentage = newValue
-        selectedSegmentedTip = 4
+        selectedSegmentedTip = _segmentedButtonList.indexOf("Custom")
         calculatePerAmount()
     }
 
@@ -243,6 +258,11 @@ class TipViewModel : ViewModel() {
         //TODO: Add error handling
         billTotal = deletedSubtotal.toDouble()
         calculatePerAmount()
+    }
+
+    fun toClipboard(): String
+    {
+        return "test"
     }
 
 }
