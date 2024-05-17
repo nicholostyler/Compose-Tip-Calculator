@@ -18,7 +18,7 @@ fun Keypad(
     Column(
         modifier = Modifier
             .padding(8.dp)
-            .fillMaxSize()
+            //.fillMaxSize()
             .then(modifier),
         horizontalAlignment = Alignment.CenterHorizontally,
         //verticalArrangement = Arrangement.Bottom

@@ -2,6 +2,7 @@ package com.nicholostyler.composetipcalculator.components
 
 import android.app.Activity
 import androidx.compose.foundation.gestures.scrollable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
@@ -62,14 +63,17 @@ fun MainCalculator(activity: Activity, tipCalcState: TipViewModel)
                 .safeDrawingPadding()
         )
         {
-            Column(modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f)
-            ) {
-                SmallAppBar(tipCalcState)
-                TotalOverview(modifier = Modifier.weight(.25f), tipCalcState)
-                SplitByOverview(modifier = Modifier.weight(.25f), tipCalcState)
-                Keypad(modifier = Modifier.weight(.5f), tipCalcState,)
+            Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.Bottom)
+            {
+                Column(
+                    modifier = Modifier
+                        .verticalScroll(rememberScrollState())
+                        .weight(1f, false)
+                ){
+                    CardGrid(modifier = Modifier.height(IntrinsicSize.Min), tipCalcState = tipCalcState)
+                }
+                TipPercentView(tipViewModel = tipCalcState)
+                Keypad(modifier = Modifier.height(250.dp), tipViewModel = tipCalcState)
             }
             PercentCardsList(modifier = Modifier.weight(1f), tipViewModel = tipCalcState)
         }
@@ -124,7 +128,6 @@ fun MainCalculator(activity: Activity, tipCalcState: TipViewModel)
     else
     {
         tipCalcState.changeSegmentedButtonCount(buttonCount = 4)
-
         BoxWithConstraints(modifier = Modifier
             .fillMaxSize()
             .safeDrawingPadding()) {
@@ -134,21 +137,23 @@ fun MainCalculator(activity: Activity, tipCalcState: TipViewModel)
                 modifier = Modifier
                     .fillMaxSize()
             ) {
-                SmallAppBar(tipCalcState)
                 if (boxWithConstraintsScope.minWidth < 290.dp)
                 {
                     tipCalcState.changeSegmentedButtonCount(buttonCount = 2)
-                    //CardGrid(modifier = Modifier.weight(2f), tipCalcState)
-                    TotalOverview(modifier = Modifier.weight(1.2f), tipCalcState)
-                    SplitByOverview(modifier = Modifier.weight(.8f), tipCalcState)
-                    TipPercentView(modifier = Modifier.weight(.3f), tipCalcState)
-                    Keypad(modifier = Modifier.weight(1f), tipCalcState,)
+
                 }
-                else
+
+                Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Bottom)
                 {
-                    CardGrid(modifier = Modifier.weight(1f), tipCalcState)
-                    TipPercentView(modifier = Modifier.weight(.4f), tipCalcState)
-                    Keypad(modifier = Modifier.weight(1.5f), tipCalcState,)
+                    Column(
+                        modifier = Modifier
+                            .verticalScroll(rememberScrollState())
+                            .weight(1f, false)
+                    ){
+                        CardGrid(modifier = Modifier.height(IntrinsicSize.Min), tipCalcState = tipCalcState)
+                    }
+                    TipPercentView(tipViewModel = tipCalcState)
+                    Keypad(modifier = Modifier.height(250.dp), tipViewModel = tipCalcState)
                 }
                 }
             }

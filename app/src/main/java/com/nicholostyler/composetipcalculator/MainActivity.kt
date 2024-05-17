@@ -132,9 +132,9 @@ class MainActivity : ComponentActivity() {
 
 
 
-@Preview(showBackground = true, heightDp = 600, widthDp = 290)
+//@Preview(showBackground = true, heightDp = 600, widthDp = 290)
 @Preview(showBackground = true, device = Devices.PIXEL_7_PRO)
-@Preview(showBackground = true, device = Devices.PIXEL_4)
+//@Preview(showBackground = true, device = Devices.PIXEL_4)
 //@Preview(showBackground = true, device = Devices.PIXEL_FOLD)
 //@Preview(showBackground = true, device = Devices.PIXEL_TABLET)
 @Composable
@@ -144,22 +144,18 @@ fun GreetingPreview()
         val tipCalcState = remember {
             TipViewModel()
         }
-        Column(verticalArrangement = Arrangement.SpaceBetween){
+        Column()
+        {
             Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .fillMaxHeight()
                     .verticalScroll(rememberScrollState())
-
-            ) {
-                tipCalcState.changeSegmentedButtonCount(buttonCount = 2)
-
-                SmallAppBar(tipCalcState)
-                CardGrid(modifier = Modifier.height(250.dp), tipCalcState)
-                TipPercentView(modifier = Modifier.height(100.dp), tipCalcState)
-                Keypad(modifier = Modifier.height(IntrinsicSize.Min), tipCalcState,)
-
+                    .weight(1f, false)
+            ){
+                CardGrid(modifier = Modifier.height(IntrinsicSize.Min), tipCalcState = tipCalcState)
             }
+            TipPercentView(tipViewModel = tipCalcState)
+            Keypad(modifier = Modifier.height(200.dp), tipViewModel = tipCalcState)
+
         }
 
 
