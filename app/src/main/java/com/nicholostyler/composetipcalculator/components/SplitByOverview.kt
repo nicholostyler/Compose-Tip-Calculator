@@ -71,7 +71,7 @@ fun SplitByCard(modifier: Modifier = Modifier, tipViewModel: TipViewModel)
             .padding(start = 16.dp, top = 16.dp, end = 16.dp)
             .weight(1f)) {
             Text("Split By", fontSize = 16.sp, fontWeight = FontWeight.Bold)
-            Text(text = "1")
+            Text(text = tipViewModel.splitBy.toString())
         }
 
         Box(modifier = Modifier
@@ -80,10 +80,10 @@ fun SplitByCard(modifier: Modifier = Modifier, tipViewModel: TipViewModel)
             Row(modifier = Modifier.fillMaxWidth()){
                 Button(modifier = Modifier
                     .weight(1f)
-                    .padding(end = 3.dp), onClick = {}){Text(text = "-")}
+                    .padding(end = 3.dp), onClick = {tipViewModel.updateSplitBy(false)}){Text(text = "-")}
                 Button(modifier = Modifier
                     .weight(1f)
-                    .padding(start = 3.dp), onClick = {}){Text(text="+")}
+                    .padding(start = 3.dp), onClick = {tipViewModel.updateSplitBy(true)}){Text(text="+")}
             }
         }
     }

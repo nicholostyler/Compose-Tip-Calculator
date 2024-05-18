@@ -63,19 +63,42 @@ fun MainCalculator(activity: Activity, tipCalcState: TipViewModel)
                 .safeDrawingPadding()
         )
         {
-            Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.Bottom)
-            {
-                Column(
-                    modifier = Modifier
-                        .verticalScroll(rememberScrollState())
-                        .weight(1f, false)
-                ){
-                    CardGrid(modifier = Modifier.height(IntrinsicSize.Min), tipCalcState = tipCalcState)
+            BoxWithConstraints(modifier = Modifier
+                .fillMaxSize()
+                .weight(1f)) {
+                val boxWithConstraintsScope = this
+                Column(modifier = Modifier.fillMaxSize() )
+                {
+                    if (boxWithConstraintsScope.minHeight < 550.dp)
+                    {
+                        Column(
+                            modifier = Modifier
+                                .verticalScroll(rememberScrollState())
+                                .weight(1f)
+                                .fillMaxHeight(),
+                        ){
+                            CardGrid(modifier = Modifier.height(IntrinsicSize.Min), tipCalcState = tipCalcState)
+                            Keypad(modifier = Modifier.weight(1f), tipViewModel = tipCalcState)
+                        }
+                    }
+                    else
+                    {
+                        Column(
+                            modifier = Modifier
+                                .weight(1f)
+                                .fillMaxHeight(),
+                        ){
+                            CardGrid(modifier = Modifier
+                                .height(IntrinsicSize.Min)
+                                .weight(1f), tipCalcState = tipCalcState)
+                            Keypad(modifier = Modifier.weight(1f), tipViewModel = tipCalcState)
+                        }
+                    }
                 }
-                TipPercentView(tipViewModel = tipCalcState)
-                Keypad(modifier = Modifier.height(250.dp), tipViewModel = tipCalcState)
             }
+
             PercentCardsList(modifier = Modifier.weight(1f), tipViewModel = tipCalcState)
+
         }
     }
     // Is a phone in landscape
@@ -137,24 +160,45 @@ fun MainCalculator(activity: Activity, tipCalcState: TipViewModel)
                 modifier = Modifier
                     .fillMaxSize()
             ) {
-                if (boxWithConstraintsScope.minWidth < 290.dp)
+                if (boxWithConstraintsScope.minWidth < 290.dp || boxWithConstraintsScope.minHeight < 550.dp)
                 {
                     tipCalcState.changeSegmentedButtonCount(buttonCount = 2)
+                    Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Bottom)
+                    {
+                        Column(
+                            modifier = Modifier
+                                .verticalScroll(rememberScrollState())
+                                .weight(2f, fill = true)
+                                .fillMaxHeight(),
+                            verticalArrangement = Arrangement.SpaceEvenly
+                        ){
+                            CardGrid(modifier = Modifier.height(IntrinsicSize.Max), tipCalcState = tipCalcState)
+                            TipPercentView(modifier = Modifier.align(Alignment.End), tipViewModel = tipCalcState)
+                        }
+                        Keypad(modifier = Modifier.weight(2f), tipViewModel = tipCalcState)
 
-                }
-
-                Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Bottom)
-                {
-                    Column(
-                        modifier = Modifier
-                            .verticalScroll(rememberScrollState())
-                            .weight(1f, false)
-                    ){
-                        CardGrid(modifier = Modifier.height(IntrinsicSize.Min), tipCalcState = tipCalcState)
                     }
-                    TipPercentView(tipViewModel = tipCalcState)
-                    Keypad(modifier = Modifier.height(250.dp), tipViewModel = tipCalcState)
                 }
+                else
+                {
+                    Column(modifier = Modifier.fillMaxSize(), )
+                    {
+                        Column(
+                            modifier = Modifier
+                                //.verticalScroll(rememberScrollState())
+                                .weight(1f)
+                                .fillMaxHeight(),
+                        ){
+                            CardGrid(modifier = Modifier
+                                .height(IntrinsicSize.Min)
+                                .weight(1f), tipCalcState = tipCalcState)
+                            TipPercentView(modifier = Modifier, tipViewModel = tipCalcState)
+                            Keypad(modifier = Modifier.weight(1f), tipViewModel = tipCalcState)
+                        }
+                    }
+                }
+
+
                 }
             }
         }
@@ -182,6 +226,7 @@ fun CardGrid(modifier: Modifier, tipCalcState: TipViewModel)
                 .fillMaxSize()
                 .then(modifier)
         ) {
+            SmallAppBar(tipViewModel = tipCalcState)
             TotalOverview(modifier = modifier.weight(1f), tipViewModel = tipCalcState)
             SplitByOverview(
                 modifier = modifier

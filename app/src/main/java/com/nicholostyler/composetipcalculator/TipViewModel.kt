@@ -262,7 +262,7 @@ class TipViewModel : ViewModel() {
 
     fun toClipboard(): String
     {
-        return "test"
+        return "Bill Total: $billTotal Tip Total: $taxTotal Per Person: $perPersonAmount"
     }
 
 }
