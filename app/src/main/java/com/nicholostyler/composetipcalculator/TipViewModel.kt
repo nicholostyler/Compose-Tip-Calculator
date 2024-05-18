@@ -17,7 +17,7 @@ import kotlin.math.roundToLong
 class TipViewModel : ViewModel() {
     private var _isCents = false
     private var _segmentedButtonList = listOf("10%", "15%", "18%", "20%", "Custom")
-    private var tipPercent = 0.00
+    private var tipPercent = 0.20
     private val _openCustomDisplay = mutableStateOf(false)
 
     val isCents: Boolean
@@ -57,8 +57,7 @@ class TipViewModel : ViewModel() {
 
     init
     {
-        selectedSegmentedTip = 0
-        tipPercent = .2
+
     }
 
     fun changeSegmentedButtonCount(buttonCount: Int)
@@ -85,7 +84,16 @@ class TipViewModel : ViewModel() {
 
         }
 
-        //segmentedButtonCount = buttonCount
+        // Need to call this because in case the call happens on first launch and this list changes
+        var tipLookup = (selectedTipPercentage).toString() + "%"
+        try
+        {
+            selectedSegmentedTip = segmentedButtonsList.indexOf(tipLookup)
+        }
+        catch (e: Exception)
+        {
+            selectedSegmentedTip = segmentedButtonsList.count() - 1
+        }
     }
 
 
@@ -139,6 +147,7 @@ class TipViewModel : ViewModel() {
 
         updateTipPercentage(doubleValue)
         selectedSegmentedTip = index
+        calculatePerAmount()
     }
 
     //TODO: Make this an overloaded method instead
