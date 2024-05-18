@@ -39,12 +39,15 @@ Other:
 
 Screenshot on phone:
 
-<img src="https://github.com/nicholostyler/Compose-Tip-Calculator/assets/39446369/7c63b41e-074d-428e-b618-576c2b075ee1" width="50%" height="50%">
-
+<img src="https://github.com/nicholostyler/Compose-Tip-Calculator/assets/39446369/a089bec0-4f69-4d89-9036-ac73f8088220" width="50%" height="50%">
 
 
 Screenshot on foldable:
 
-<img src="https://github.com/nicholostyler/Compose-Tip-Calculator/assets/39446369/627aff18-e235-4cae-8750-311da84dd23b" width="50%" height="50%">
+<img src="https://github.com/nicholostyler/Compose-Tip-Calculator/assets/39446369/1901ac2d-8d0d-4ce4-8e76-daab96ae8b78" width="50%" height="50%">
+
+Screenshot on Tablet:
+
+<img src="https://github.com/nicholostyler/Compose-Tip-Calculator/assets/39446369/59399f53-4355-42f6-a535-9086f1b86c46" width="50%" height="50%">
 
 
