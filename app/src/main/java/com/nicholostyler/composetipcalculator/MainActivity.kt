@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.width
@@ -132,9 +133,9 @@ class MainActivity : ComponentActivity() {
 
 
 
-@Preview(showBackground = true, heightDp = 550, widthDp = 600)
-//@Preview(showBackground = true, device = Devices.PIXEL_7_PRO)
+@Preview(showBackground = true, heightDp = 600, widthDp = 415)
 @Preview(showBackground = true, device = Devices.PIXEL_7_PRO)
+@Preview(showBackground = true, device = Devices.PIXEL_4)
 //@Preview(showBackground = true, device = Devices.PIXEL_FOLD)
 //@Preview(showBackground = true, device = Devices.PIXEL_TABLET)
 @Composable
@@ -144,19 +145,35 @@ fun GreetingPreview()
         val tipCalcState = remember {
             TipViewModel()
         }
-        Column(modifier = Modifier.fillMaxSize(), )
-        {
-            Column(
-                modifier = Modifier
-                    //.verticalScroll(rememberScrollState())
-                    .weight(1f)
-                    .fillMaxHeight(),
-            ){
-                CardGrid(modifier = Modifier.height(IntrinsicSize.Min).weight(1f), tipCalcState = tipCalcState)
-                TipPercentView(modifier = Modifier, tipViewModel = tipCalcState)
-                Keypad(modifier = Modifier.weight(1f), tipViewModel = tipCalcState)
+
+        BoxWithConstraints(modifier = Modifier
+            .fillMaxSize()
+            .safeDrawingPadding()) {
+            val boxWithConstraintsScope = this
+            tipCalcState.changeSegmentedButtonCount(boxWithConstraintsScope.minWidth)
+
+            Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.SpaceBetween)
+            {
+                Column(
+                    modifier = Modifier
+                        .verticalScroll(rememberScrollState())
+                        .weight(1f)
+                        .fillMaxHeight(),
+                ){
+                    CardGrid(modifier = Modifier
+                        .height(boxWithConstraintsScope.maxHeight /2 )
+                        //.defaultMinSize(minHeight = 350.dp)
+                        , tipCalcState = tipCalcState)
+
+                    Column(Modifier.height(boxWithConstraintsScope.maxHeight /2))
+                    {
+                        TipPercentView(modifier = Modifier, tipViewModel = tipCalcState)
+                        Keypad(modifier = Modifier, tipViewModel = tipCalcState)
+                    }
+                }
             }
-        }
+            }
+
     }
     }
 

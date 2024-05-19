@@ -9,10 +9,12 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -56,47 +58,13 @@ fun MainCalculator(activity: Activity, tipCalcState: TipViewModel)
     // If is wide display (foldable/tablet)
     if (windowSizeClass.widthSizeClass >= WindowWidthSizeClass.Medium && windowSizeClass.heightSizeClass >= WindowHeightSizeClass.Medium)
     {
-        tipCalcState.changeSegmentedButtonCount(buttonCount = 5)
         Row(
             modifier = Modifier
                 .fillMaxSize()
                 .safeDrawingPadding()
         )
         {
-            BoxWithConstraints(modifier = Modifier
-                .fillMaxSize()
-                .weight(1f)) {
-                val boxWithConstraintsScope = this
-                Column(modifier = Modifier.fillMaxSize() )
-                {
-                    if (boxWithConstraintsScope.minHeight < 550.dp)
-                    {
-                        Column(
-                            modifier = Modifier
-                                .verticalScroll(rememberScrollState())
-                                .weight(1f)
-                                .fillMaxHeight(),
-                        ){
-                            CardGrid(modifier = Modifier.height(IntrinsicSize.Min), tipCalcState = tipCalcState)
-                            Keypad(modifier = Modifier.weight(1f), tipViewModel = tipCalcState)
-                        }
-                    }
-                    else
-                    {
-                        Column(
-                            modifier = Modifier
-                                .weight(1f)
-                                .fillMaxHeight(),
-                        ){
-                            CardGrid(modifier = Modifier
-                                .height(IntrinsicSize.Min)
-                                .weight(1f), tipCalcState = tipCalcState)
-                            Keypad(modifier = Modifier.weight(1f), tipViewModel = tipCalcState)
-                        }
-                    }
-                }
-            }
-
+            PhonePane(modifier = Modifier.weight(1f), activity, tipCalcState)
             PercentCardsList(modifier = Modifier.weight(1f), tipViewModel = tipCalcState)
 
         }
@@ -105,103 +73,13 @@ fun MainCalculator(activity: Activity, tipCalcState: TipViewModel)
     // Is a phone/foldable in split view
     else if (windowSizeClass.heightSizeClass <= WindowHeightSizeClass.Compact)
     {
-        // Set Segmented Button to 3
-        tipCalcState.changeSegmentedButtonCount(buttonCount = 3)
-        BoxWithConstraints(modifier = Modifier
-            .fillMaxSize()
-            .safeDrawingPadding()) {
-            val boxWithConstraintsScope = this
-
-            if (boxWithConstraintsScope.minHeight < 371.dp || boxWithConstraintsScope.minWidth < 550.dp)
-            {
-                tipCalcState.changeSegmentedButtonCount(buttonCount = 2)
-            }
-
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-            ) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .align(Alignment.End)
-                        .weight(.2f)
-                ) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .safeDrawingPadding()
-                    )
-                    {
-                        SideCards(modifier = Modifier.weight(1f), tipViewModel = tipCalcState)
-                        Column(
-                            modifier = Modifier.weight(1f)
-                        )
-                        {
-
-                            TipPercentView(modifier = Modifier.weight(.6f), tipCalcState)
-                            Keypad(modifier = Modifier.weight(2f), tipCalcState,)
-                        }
-                    }
-                }
-            }
-        }
+        LandscapePane(modifier = Modifier, tipCalcState = tipCalcState)
     }
     // Is a regular phone view
     else
     {
-        tipCalcState.changeSegmentedButtonCount(buttonCount = 4)
-        BoxWithConstraints(modifier = Modifier
-            .fillMaxSize()
-            .safeDrawingPadding()) {
-            val boxWithConstraintsScope = this
-
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-            ) {
-                if (boxWithConstraintsScope.minWidth < 290.dp || boxWithConstraintsScope.minHeight < 550.dp)
-                {
-                    tipCalcState.changeSegmentedButtonCount(buttonCount = 2)
-                    Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Bottom)
-                    {
-                        Column(
-                            modifier = Modifier
-                                .verticalScroll(rememberScrollState())
-                                .weight(2f, fill = true)
-                                .fillMaxHeight(),
-                            verticalArrangement = Arrangement.SpaceEvenly
-                        ){
-                            CardGrid(modifier = Modifier.height(IntrinsicSize.Max), tipCalcState = tipCalcState)
-                            TipPercentView(modifier = Modifier.align(Alignment.End), tipViewModel = tipCalcState)
-                        }
-                        Keypad(modifier = Modifier.weight(2f), tipViewModel = tipCalcState)
-
-                    }
-                }
-                else
-                {
-                    Column(modifier = Modifier.fillMaxSize(), )
-                    {
-                        Column(
-                            modifier = Modifier
-                                //.verticalScroll(rememberScrollState())
-                                .weight(1f)
-                                .fillMaxHeight(),
-                        ){
-                            CardGrid(modifier = Modifier
-                                .height(IntrinsicSize.Min)
-                                .weight(1f), tipCalcState = tipCalcState)
-                            TipPercentView(modifier = Modifier, tipViewModel = tipCalcState)
-                            Keypad(modifier = Modifier.weight(1f), tipViewModel = tipCalcState)
-                        }
-                    }
-                }
-
-
-                }
-            }
-        }
+        PhonePane(modifier = Modifier, activity = activity, tipCalcState = tipCalcState)
+    }
 
     // BUG: Lags when closing with gesture nav
     // potential fix: https://medium.com/@giuliopime/modalbottomsheet-and-the-system-navigation-bar-jetpack-compose-6e9bf58e8317

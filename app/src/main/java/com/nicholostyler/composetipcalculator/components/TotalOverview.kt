@@ -57,16 +57,15 @@ fun TipCard(modifier: Modifier = Modifier, tipViewModel: TipViewModel)
             containerColor = MaterialTheme.colorScheme.surfaceVariant,
         ),
         modifier = Modifier
-            //.fillMaxSize()
+            .fillMaxSize()
             .padding(start = 8.dp, top = 8.dp, end = 8.dp)
             .then(modifier)
     ) {
         Column(modifier = Modifier
             .fillMaxWidth()
-            .fillMaxHeight()
-            .padding(16.dp)
+            .padding(start = 16.dp, top = 16.dp, end = 16.dp)
             .weight(1f)
-        ) {
+        ){
             Text("Tip Total ${tipViewModel.selectedTipPercentage}%", fontSize = 16.sp, fontWeight = FontWeight.Bold)
             Text(text = tipTotal)
             Text("Tip Per Person", fontSize = 16.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(top = 8.dp))
@@ -98,7 +97,8 @@ fun TotalCard(modifier: Modifier = Modifier, tipViewModel: TipViewModel)
         Column(modifier = Modifier
             .fillMaxWidth()
             .padding(start = 16.dp, top = 16.dp, end = 16.dp)
-            .weight(1f)) {
+            .weight(1f)
+        ) {
             Text("Bill Total", fontSize = 16.sp, fontWeight = FontWeight.Bold)
             Text(text = billTotal)
             Text("Total With Tip", fontSize = 16.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(top = 8.dp))

@@ -7,6 +7,8 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import java.math.RoundingMode
 import java.text.DecimalFormat
@@ -60,8 +62,25 @@ class TipViewModel : ViewModel() {
 
     }
 
-    fun changeSegmentedButtonCount(buttonCount: Int)
+    fun changeSegmentedButtonCount(containerWidth: Dp)
     {
+        var buttonCount: Int = 0
+
+        // Set Segmented button count based on width.
+        if (containerWidth > 400.dp)
+        {
+            buttonCount = 4
+        }
+        if (containerWidth < 400.dp)
+        {
+            buttonCount = 3
+        }
+
+        if (containerWidth < 250.dp)
+        {
+            buttonCount = 2
+        }
+
         if (buttonCount <= 0) return;
         if (buttonCount >= 5) return;
 
