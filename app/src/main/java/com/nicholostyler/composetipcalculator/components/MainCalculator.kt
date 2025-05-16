@@ -104,7 +104,7 @@ fun CardGrid(modifier: Modifier, tipCalcState: TipViewModel)
                 .fillMaxSize()
                 .then(modifier)
         ) {
-            SmallAppBar(tipViewModel = tipCalcState)
+            //SmallAppBar(tipViewModel = tipCalcState)
             TotalOverview(modifier = modifier.weight(1f), tipViewModel = tipCalcState)
             SplitByOverview(
                 modifier = modifier

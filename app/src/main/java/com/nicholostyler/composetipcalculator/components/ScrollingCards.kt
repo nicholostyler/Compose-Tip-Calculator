@@ -66,7 +66,7 @@ fun SideCards(modifier: Modifier, tipViewModel: TipViewModel) {
         .fillMaxHeight())
     {
         items (count = 1) {
-            SmallAppBar(tipViewModel)
+            //SmallAppBar(tipViewModel)
             SplitByAddCard(modifier = modifier.height(100.dp), tipViewModel = tipViewModel)
             TotalTopCard(modifier = modifier.height(100.dp), tipViewModel = tipViewModel)
 

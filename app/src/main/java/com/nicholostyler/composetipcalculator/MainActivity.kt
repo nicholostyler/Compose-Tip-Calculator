@@ -133,9 +133,13 @@ class MainActivity : ComponentActivity() {
 
 
 
-@Preview(showBackground = true, heightDp = 600, widthDp = 415)
-@Preview(showBackground = true, device = Devices.PIXEL_7_PRO)
-@Preview(showBackground = true, device = Devices.PIXEL_4)
+@Preview(fontScale = 0.85f, name = "Scale 85%", group = "Font Scaling")
+@Preview(fontScale = 1f, name = "Scale 100%", group = "Font Scaling")
+@Preview(fontScale = 1.15f, name = "Scale 115%", group = "Font Scaling")
+@Preview(fontScale = 1.3f, name = "Scale 130%", group = "Font Scaling")
+@Preview(fontScale = 1.5f, name = "Scale 150%", group = "Font Scaling")
+@Preview(fontScale = 1.8f, name = "Scale 180%", group = "Font Scaling")
+@Preview(fontScale = 2f, name = "Scale 200%", group = "Font Scaling")
 //@Preview(showBackground = true, device = Devices.PIXEL_FOLD)
 //@Preview(showBackground = true, device = Devices.PIXEL_TABLET)
 @Composable
@@ -158,7 +162,7 @@ fun GreetingPreview()
                     modifier = Modifier
                         .verticalScroll(rememberScrollState())
                         .weight(1f)
-                        .fillMaxHeight(),
+                        .fillMaxSize(),
                 ){
                     CardGrid(modifier = Modifier
                         .height(boxWithConstraintsScope.maxHeight /2 )

@@ -66,10 +66,8 @@ fun TipCard(modifier: Modifier = Modifier, tipViewModel: TipViewModel)
             .padding(start = 16.dp, top = 16.dp, end = 16.dp)
             .weight(1f)
         ){
-            Text("Tip Total ${tipViewModel.selectedTipPercentage}%", fontSize = 16.sp, fontWeight = FontWeight.Bold)
+            Text("Tip ${tipViewModel.selectedTipPercentage}%", fontSize = MaterialTheme.typography.titleSmall.fontSize, fontWeight = FontWeight.Bold)
             Text(text = tipTotal)
-            Text("Tip Per Person", fontSize = 16.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(top = 8.dp))
-            Text(text = tipPerPerson)
         }
     }
 }
@@ -99,10 +97,8 @@ fun TotalCard(modifier: Modifier = Modifier, tipViewModel: TipViewModel)
             .padding(start = 16.dp, top = 16.dp, end = 16.dp)
             .weight(1f)
         ) {
-            Text("Bill Total", fontSize = 16.sp, fontWeight = FontWeight.Bold)
+            Text("Bill Total", fontSize = MaterialTheme.typography.titleSmall.fontSize, fontWeight = FontWeight.Bold)
             Text(text = billTotal)
-            Text("Total With Tip", fontSize = 16.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(top = 8.dp))
-            Text(text = totalWithTip)
         }
     }
 }

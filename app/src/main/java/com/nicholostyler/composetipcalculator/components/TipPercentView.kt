@@ -16,6 +16,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.nicholostyler.composetipcalculator.TipViewModel
 
@@ -43,7 +44,7 @@ fun TipPercentView(
                     onClick = { percentButtonClick(index, tipViewModel, options[index]) },
                     selected = index == tipViewModel.selectedSegmentedTip,
                 ) {
-                    Text(label)
+                    Text(label, overflow = TextOverflow.Ellipsis, maxLines = 1)
 
                 }
             }

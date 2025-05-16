@@ -48,7 +48,7 @@ fun PerPersonAmountCard(modifier: Modifier = Modifier, tipViewModel: TipViewMode
             .padding(start = 16.dp, top = 16.dp, end = 16.dp)
 
             .weight(1f)) {
-            Text("Per Person", fontSize = 16.sp, fontWeight = FontWeight.Bold)
+            Text("Split Total", fontSize = MaterialTheme.typography.titleSmall.fontSize, fontWeight = FontWeight.Bold)
             Text(text = perPerson)
         }
     }
@@ -70,22 +70,20 @@ fun SplitByCard(modifier: Modifier = Modifier, tipViewModel: TipViewModel)
             .fillMaxWidth()
             .padding(start = 16.dp, top = 16.dp, end = 16.dp)
             .weight(1f)) {
-            Text("Split By", fontSize = 16.sp, fontWeight = FontWeight.Bold)
-            Text(text = tipViewModel.splitBy.toString())
-        }
-
-        Box(modifier = Modifier
-            .fillMaxWidth()
-            .padding(bottom = 8.dp, start = 8.dp, end = 8.dp)) {
+            Text("Split By", fontSize = MaterialTheme.typography.titleSmall.fontSize, fontWeight = FontWeight.Bold)
             Row(modifier = Modifier.fillMaxWidth()){
                 Button(modifier = Modifier
                     .weight(1f)
                     .padding(end = 3.dp), onClick = {tipViewModel.updateSplitBy(false)}){Text(text = "-")}
+                Text(text = tipViewModel.splitBy.toString())
+
                 Button(modifier = Modifier
                     .weight(1f)
                     .padding(start = 3.dp), onClick = {tipViewModel.updateSplitBy(true)}){Text(text="+")}
             }
         }
+
+
     }
 }
 
